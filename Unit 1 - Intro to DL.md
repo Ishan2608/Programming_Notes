@@ -25,7 +25,7 @@ Artificial neural networks are built on an analogy with biological neurons in th
 
 A biological neuron has four main structural components, each with a distinct functional role.
 
-![Labelled Neuron](https://upload.wikimedia.org/wikipedia/commons/4/44/Complete_neuron_cell_diagram_en.svg)
+![Labelled Neuron](https://upload.wikimedia.org/wikipedia/commons/1/10/Blausen_0657_MultipolarNeuron.png)
 
 | Biological Component | Role |
 |---|---|
