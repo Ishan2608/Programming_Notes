@@ -363,10 +363,7 @@ How it works:
 - Computes vertical intensity gradient (difference between top and bottom pixels).
 - Detects transitions along the y-direction.
 - Central column weighting improves robustness to noise.
-- Often combined with Sobel X to compute gradient magnitude:
-  $$
-  G = \sqrt{G_x^2 + G_y^2}
-  $$
+- Often combined with Sobel X to compute gradient magnitude: G = sqrt(Gx^2 + Gy^2)
 
 **Laplacian — Detects edges in all directions**
 
