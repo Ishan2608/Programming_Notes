@@ -331,35 +331,124 @@ The block learns only the **residual** `F(x) = H(x) − x`. If no transformation
 
 Convolutional filters can be designed manually to perform known image processing operations, or learned automatically from data. The following are standard predefined filters used in image processing and in the early layers of CNNs.
 
-### Edge Detection
+## Edge Detection
 
-| Filter | Detects | Kernel (3×3) |
-|---|---|---|
-| Sobel X | Vertical edges | `[−1, 0, +1 / −2, 0, +2 / −1, 0, +1]` |
-| Sobel Y | Horizontal edges | `[−1, −2, −1 / 0, 0, 0 / +1, +2, +1]` |
-| Laplacian | All-direction edges | `[0, 1, 0 / 1, −4, 1 / 0, 1, 0]` |
-| Canny | Clean, thin edges | Multi-step: Gaussian blur → Gradient → Non-max suppression → Thresholding |
+**Sobel X — Detects vertical edges**
 
-### Blur / Smoothing
+$$
+\begin{bmatrix}
+-1 & 0 & +1 \\
+-2 & 0 & +2 \\
+-1 & 0 & +1
+\end{bmatrix}
+$$
 
-| Filter | Operation | Kernel (3×3) |
-|---|---|---|
-| Box / Average | Replace each pixel with the mean of its neighbourhood | All values = 1/9 |
-| Gaussian | Replace with a centre-weighted mean (smoother result) | `(1/16)[1,2,1 / 2,4,2 / 1,2,1]` |
+How it works:
+- Computes horizontal intensity gradient (difference between left and right pixels).
+- Positive values respond to bright-to-dark transitions in the x-direction.
+- Middle row has higher weight (±2) to emphasize central pixels and reduce noise sensitivity.
+- Output magnitude corresponds to edge strength.
 
-### Sharpening
+**Sobel Y — Detects horizontal edges**
 
-| Filter | Operation | Kernel (3×3) |
-|---|---|---|
-| Sharpen | Enhances edges, increases local contrast | `[0, −1, 0 / −1, 5, −1 / 0, −1, 0]` |
+$$
+\begin{bmatrix}
+-1 & -2 & -1 \\
+0 & 0 & 0 \\
++1 & +2 & +1
+\end{bmatrix}
+$$
 
-### Padding Reference
+How it works:
+- Computes vertical intensity gradient (difference between top and bottom pixels).
+- Detects transitions along the y-direction.
+- Central column weighting improves robustness to noise.
+- Often combined with Sobel X to compute gradient magnitude:
+  $$
+  G = \sqrt{G_x^2 + G_y^2}
+  $$
 
-| Type | Padding value | Output size | Use case |
-|---|---|---|---|
-| Valid | P = 0 | Smaller than input | Default; no border treatment |
-| Same | P = (F−1)/2 | Equal to input | Preserve spatial size across layers |
+**Laplacian — Detects edges in all directions**
 
+$$
+\begin{bmatrix}
+0 & 1 & 0 \\
+1 & -4 & 1 \\
+0 & 1 & 0
+\end{bmatrix}
+$$
+
+How it works:
+- Approximates the second spatial derivative (rate of change of gradient).
+- Highlights regions where intensity changes rapidly in any direction.
+- Center negative value subtracts surrounding average → emphasizes discontinuities.
+- Sensitive to noise, so often preceded by Gaussian smoothing.
+
+
+**Canny — Clean, thin edges**
+
+Multi-stage algorithm:
+- Gaussian blur reduces noise.
+- Gradient computation identifies edge strength and direction.
+- Non-maximum suppression thins edges.
+- Double threshold + hysteresis removes weak false edges.
+
+
+## Blur / Smoothing
+
+**Box / Average — Replace each pixel with the mean of its neighbourhood**
+
+$$
+\frac{1}{9}
+\begin{bmatrix}
+1 & 1 & 1 \\
+1 & 1 & 1 \\
+1 & 1 & 1
+\end{bmatrix}
+$$
+
+How it works:
+- Computes simple local average of surrounding pixels.
+- Reduces high-frequency noise.
+- Causes noticeable blurring because all neighbors have equal importance.
+- Fast but produces less natural smoothing than Gaussian.
+
+
+**Gaussian — Centre-weighted smoothing**
+
+$$
+\frac{1}{16}
+\begin{bmatrix}
+1 & 2 & 1 \\
+2 & 4 & 2 \\
+1 & 2 & 1
+\end{bmatrix}
+$$
+
+How it works:
+- Approximates a Gaussian distribution.
+- Central pixel has highest influence → preserves structure better than box blur.
+- Smooths noise while maintaining edges more naturally.
+- Common preprocessing step before edge detection.
+
+
+## Sharpening
+
+**Sharpen — Enhances edges and increases local contrast**
+
+$$
+\begin{bmatrix}
+0 & -1 & 0 \\
+-1 & 5 & -1 \\
+0 & -1 & 0
+\end{bmatrix}
+$$
+
+How it works:
+- Center value (>1) amplifies the original pixel intensity.
+- Negative neighbors subtract surrounding blur.
+- Equivalent to: original image + edge information.
+- Increases perceived detail and contrast.
 
 ## Numerical 3 — Parameter Counting
 
