@@ -1,0 +1,2582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Data Analytics — TBD 602 Study Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Poppins:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --surface2: #1a1e28;
+  --border: #232736;
+  --border2: #2e3347;
+  --text: #c8d0e0;
+  --text-dim: #6b7494;
+  --text-bright: #e8edf8;
+  --accent: #e8b86d;
+  --accent2: #6dd4e8;
+  --accent3: #9d7ae8;
+  --accent4: #68e8a0;
+  --u1: #e87d6d;
+  --u2: #e8b86d;
+  --u3: #6dd4e8;
+  --u4: #9d7ae8;
+  --u5: #68e8a0;
+  --sidebar-w: 280px;
+  --font-display: 'Montserrat', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ─── SIDEBAR ─── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header .course-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.sidebar-header h1 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-bright);
+  line-height: 1.3;
+}
+
+.sidebar-search {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-search input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 7px 10px 7px 32px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7494' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+.sidebar-search input:focus { border-color: var(--accent); }
+.sidebar-search input::placeholder { color: var(--text-dim); }
+
+.nav-unit {
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-unit-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+.nav-unit-header:hover { background: var(--surface2); }
+
+.unit-badge {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.nav-unit-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-bright);
+  flex: 1;
+  line-height: 1.2;
+}
+
+.nav-unit-arrow {
+  color: var(--text-dim);
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+.nav-unit.open .nav-unit-arrow { transform: rotate(90deg); }
+
+.nav-sections {
+  display: none;
+  padding: 4px 0 8px;
+}
+.nav-unit.open .nav-sections { display: block; }
+
+.nav-link {
+  display: block;
+  padding: 5px 16px 5px 50px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1.4;
+}
+.nav-link:hover { color: var(--text-bright); background: var(--surface2); }
+.nav-link.active { color: var(--accent); }
+
+/* ─── MAIN CONTENT ─── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-width: 0;
+}
+
+.page-hero {
+  background: linear-gradient(135deg, #0d0f14 0%, #13161e 50%, #0f111a 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 72px 72px 56px;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(232,184,109,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.page-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 30%;
+  width: 500px; height: 300px;
+  background: radial-gradient(circle, rgba(109,212,232,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.page-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.5vw, 48px);
+  font-weight: 800;
+  color: var(--text-bright);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+.page-hero h1 span {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border2);
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent4);
+  display: inline-block;
+}
+
+.unit-index {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.unit-index-card {
+  background: var(--surface);
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  display: block;
+}
+.unit-index-card:hover { background: var(--surface2); }
+
+.unit-num {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.unit-index-card .unit-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-bright);
+  line-height: 1.3;
+}
+
+/* ─── CONTENT AREA ─── */
+#content {
+  padding: 0 72px 80px;
+  max-width: 1100px;
+}
+
+/* ─── UNIT SECTIONS ─── */
+.unit-section {
+  padding-top: 64px;
+  border-top: 1px solid var(--border);
+  margin-top: 64px;
+}
+
+.unit-section:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+
+.unit-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 48px;
+  padding: 28px 32px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.unit-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--unit-color);
+  opacity: 0.06;
+}
+
+.unit-header-badge {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.unit-header-text { position: relative; }
+
+.unit-header-text .unit-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.unit-header-text h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: -0.02em;
+}
+
+/* ─── TOPIC SECTIONS ─── */
+.topic {
+  margin-bottom: 56px;
+}
+
+.topic > h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topic > h2 .num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  background: var(--surface2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 400;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin: 28px 0 12px;
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent2);
+  margin: 20px 0 8px;
+}
+
+p {
+  margin-bottom: 16px;
+  color: var(--text);
+  line-height: 1.8;
+}
+
+strong { color: var(--text-bright); font-weight: 600; }
+em { color: var(--text-dim); font-style: italic; }
+
+ul, ol {
+  margin: 12px 0 16px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+li {
+  padding: 4px 0 4px 22px;
+  position: relative;
+  line-height: 1.7;
+  margin-bottom: 4px;
+}
+
+ul > li::before {
+  content: '›';
+  position: absolute;
+  left: 6px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+ol { counter-reset: ol-counter; }
+ol > li {
+  counter-increment: ol-counter;
+  padding-left: 28px;
+}
+ol > li::before {
+  content: counter(ol-counter) '.';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ─── CODE / PRE ─── */
+pre, code {
+  font-family: var(--font-mono);
+}
+
+code {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 13px;
+  color: var(--accent2);
+}
+
+pre {
+  background: #0a0c10;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  margin: 20px 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #a8b5cc;
+  position: relative;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+pre .pre-label {
+  position: absolute;
+  top: 10px; right: 14px;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Diagram images (replacing ASCII art) */
+.diagram-img-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 20px 24px;
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.diagram-img-wrap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  background: #fff;
+  padding: 8px;
+}
+
+/* ASCII diagrams */
+.ascii-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 20px 24px;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+
+.ascii-diagram pre {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8fa0bc;
+}
+
+/* ─── TABLES ─── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead tr {
+  background: var(--surface2);
+}
+
+th {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid var(--border2);
+}
+
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none; }
+
+tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+
+/* ─── CALLOUT BOXES ─── */
+.callout {
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-left: 3px solid;
+  display: flex;
+  gap: 14px;
+}
+
+.callout-real {
+  background: rgba(104,232,160,0.06);
+  border-color: var(--accent4);
+}
+
+.callout-formula {
+  background: rgba(157,122,232,0.06);
+  border-color: var(--accent3);
+}
+
+.callout-tip {
+  background: rgba(232,184,109,0.06);
+  border-color: var(--accent);
+}
+
+.callout-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.callout-body { flex: 1; }
+.callout-body strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* ─── NUMERICAL SOLVED BOX ─── */
+.solved-box {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  margin: 24px 0;
+  overflow: hidden;
+}
+
+.solved-box-header {
+  background: var(--surface2);
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solved-box-header .icon { font-size: 16px; }
+
+.solved-box-header span {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.02em;
+}
+
+.solved-box-body {
+  padding: 20px 24px;
+}
+
+/* ─── STEP INDICATOR ─── */
+.step-block {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #0d0f14;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.step-content { flex: 1; }
+
+/* ─── KEY TERM ─── */
+.key-term {
+  display: inline;
+  background: rgba(232,184,109,0.1);
+  color: var(--accent);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-weight: 600;
+}
+
+/* ─── FORMULA DISPLAY ─── */
+.formula-block {
+  background: rgba(157,122,232,0.06);
+  border: 1px solid rgba(157,122,232,0.2);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 16px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* ─── DEFINITION LIST ─── */
+.def-list { margin: 16px 0; }
+
+.def-item {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.def-item:last-child { border-bottom: none; }
+
+.def-term {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent2);
+  min-width: 180px;
+  font-weight: 500;
+  padding-top: 2px;
+}
+
+.def-desc { flex: 1; font-size: 14px; line-height: 1.6; }
+
+/* ─── ERA TIMELINE (Evolution) ─── */
+.era-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 20px 0;
+}
+
+.era-item {
+  display: flex;
+  gap: 0;
+  position: relative;
+}
+
+.era-item::before {
+  content: '';
+  position: absolute;
+  left: 71px;
+  top: 36px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--border2);
+}
+
+.era-item:last-child::before { display: none; }
+
+.era-year {
+  width: 80px;
+  padding: 12px 0;
+  flex-shrink: 0;
+  text-align: right;
+  padding-right: 20px;
+}
+
+.era-year span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.era-dot {
+  width: 24px;
+  padding-top: 16px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.era-dot::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 2px var(--accent);
+  flex-shrink: 0;
+}
+
+.era-content {
+  flex: 1;
+  padding: 10px 0 20px 20px;
+}
+
+.era-content h4 {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin: 0 0 6px;
+}
+
+/* ─── 5V CARDS ─── */
+.vees-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.v-card {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.v-letter {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.v-name {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 6px;
+}
+
+.v-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ─── HPA LAYERS ─── */
+.layers-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 20px 0;
+}
+
+.layer-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.layer-num {
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.layer-body {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  border-left: 3px solid;
+}
+
+/* ─── PROGRESS / READING ─── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 1000;
+  transition: width 0.1s;
+}
+
+/* ─── BACK TO TOP ─── */
+#back-top {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  width: 44px; height: 44px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 18px;
+  transition: all 0.2s;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 200;
+}
+#back-top.visible { opacity: 1; pointer-events: auto; }
+#back-top:hover { background: var(--accent); color: #0d0f14; border-color: var(--accent); }
+
+/* ─── UNIT COLORS ─── */
+.unit-1 { --unit-color: var(--u1); }
+.unit-2 { --unit-color: var(--u2); }
+.unit-3 { --unit-color: var(--u3); }
+.unit-4 { --unit-color: var(--u4); }
+.unit-5 { --unit-color: var(--u5); }
+
+.unit-1 .unit-header-badge, .unit-1 .unit-badge { background: rgba(232,125,109,0.15); color: var(--u1); }
+.unit-1 .unit-label, .unit-1 .unit-num { color: var(--u1); }
+.unit-1 .unit-header { border: 1px solid rgba(232,125,109,0.2); }
+
+.unit-2 .unit-header-badge, .unit-2 .unit-badge { background: rgba(232,184,109,0.15); color: var(--u2); }
+.unit-2 .unit-label, .unit-2 .unit-num { color: var(--u2); }
+.unit-2 .unit-header { border: 1px solid rgba(232,184,109,0.2); }
+
+.unit-3 .unit-header-badge, .unit-3 .unit-badge { background: rgba(109,212,232,0.15); color: var(--u3); }
+.unit-3 .unit-label, .unit-3 .unit-num { color: var(--u3); }
+.unit-3 .unit-header { border: 1px solid rgba(109,212,232,0.2); }
+
+.unit-4 .unit-header-badge, .unit-4 .unit-badge { background: rgba(157,122,232,0.15); color: var(--u4); }
+.unit-4 .unit-label, .unit-4 .unit-num { color: var(--u4); }
+.unit-4 .unit-header { border: 1px solid rgba(157,122,232,0.2); }
+
+.unit-5 .unit-header-badge, .unit-5 .unit-badge { background: rgba(104,232,160,0.15); color: var(--u5); }
+.unit-5 .unit-label, .unit-5 .unit-num { color: var(--u5); }
+.unit-5 .unit-header { border: 1px solid rgba(104,232,160,0.2); }
+
+/* ─── SEARCH HIGHLIGHT ─── */
+.highlight { background: rgba(232,184,109,0.3); border-radius: 2px; }
+
+/* ─── SIDEBAR TOGGLE BUTTON ─── */
+#sidebar-toggle {
+  position: fixed;
+  top: 14px;
+  left: 244px;
+  z-index: 300;
+  width: 32px; height: 32px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s, border-color 0.2s;
+}
+#sidebar-toggle:hover { background: var(--border2); border-color: var(--accent); }
+#sidebar-toggle span {
+  display: block;
+  width: 14px; height: 1.5px;
+  background: var(--text-dim);
+  border-radius: 2px;
+  transition: transform 0.25s, opacity 0.25s, width 0.25s, background 0.2s;
+}
+#sidebar-toggle:hover span { background: var(--accent); }
+/* Animate into ← arrow when open */
+body:not(.sidebar-collapsed) #sidebar-toggle span:nth-child(1) {
+  transform: translateY(2.75px) rotate(-35deg) scaleX(0.7);
+  transform-origin: right center;
+}
+body:not(.sidebar-collapsed) #sidebar-toggle span:nth-child(3) {
+  transform: translateY(-2.75px) rotate(35deg) scaleX(0.7);
+  transform-origin: right center;
+}
+/* Arrow points right when collapsed */
+body.sidebar-collapsed #sidebar-toggle span:nth-child(1) {
+  transform: translateY(2.75px) rotate(35deg) scaleX(0.7);
+  transform-origin: right center;
+}
+body.sidebar-collapsed #sidebar-toggle span:nth-child(3) {
+  transform: translateY(-2.75px) rotate(-35deg) scaleX(0.7);
+  transform-origin: right center;
+}
+
+/* Move button when sidebar collapses */
+body.sidebar-collapsed #sidebar-toggle { left: 12px; }
+
+/* ─── SIDEBAR SLIDE ─── */
+#sidebar {
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.sidebar-collapsed #sidebar {
+  transform: translateX(-100%);
+}
+
+/* ─── MAIN CONTENT SHIFT ─── */
+#main {
+  transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.sidebar-collapsed #main {
+  margin-left: 0;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  body:not(.sidebar-collapsed) #sidebar {
+    box-shadow: 4px 0 32px rgba(0,0,0,0.6);
+  }
+  body:not(.sidebar-collapsed) #main { margin-left: 0; }
+  #content { padding: 0 24px 60px; }
+  .page-hero { padding: 48px 24px 40px; }
+  .unit-index { grid-template-columns: repeat(2, 1fr); }
+  .vees-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ─── SIDEBAR TOGGLE ─── -->
+<button id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle navigation">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ─── SIDEBAR ─── -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <h1>Big Data Analytics</h1>
+  </div>
+  <div class="sidebar-search">
+    <input type="text" id="search-input" placeholder="Search topics..." autocomplete="off">
+  </div>
+
+  <div class="nav-unit open" data-unit="1">
+    <div class="nav-unit-header">
+      <div class="unit-badge" style="background:rgba(232,125,109,0.15);color:var(--u1);">I</div>
+      <span class="nav-unit-title">Introduction to Big Data</span>
+      <span class="nav-unit-arrow">›</span>
+    </div>
+    <div class="nav-sections">
+      <a class="nav-link" href="#u1-evolution">1. Evolution of Big Data</a>
+      <a class="nav-link" href="#u1-types">2. Types of Data</a>
+      <a class="nav-link" href="#u1-intro">3. Introduction to Big Data</a>
+      <a class="nav-link" href="#u1-5vs">4. The 5 V's</a>
+      <a class="nav-link" href="#u1-analytics">5. Big Data Analytics</a>
+      <a class="nav-link" href="#u1-apps">6. Applications</a>
+      <a class="nav-link" href="#u1-storage">7. Storage Fundamentals</a>
+      <a class="nav-link" href="#u1-hadoop">8. Hadoop Framework</a>
+      <a class="nav-link" href="#u1-hpa">9. High-Performance Architecture</a>
+    </div>
+  </div>
+
+  <div class="nav-unit" data-unit="2">
+    <div class="nav-unit-header">
+      <div class="unit-badge" style="background:rgba(232,184,109,0.15);color:var(--u2);">II</div>
+      <span class="nav-unit-title">Clustering & Classification</span>
+      <span class="nav-unit-arrow">›</span>
+    </div>
+    <div class="nav-sections">
+      <a class="nav-link" href="#u2-clustering-intro">1. Data Clustering</a>
+      <a class="nav-link" href="#u2-kmeans">2. K-Means Clustering</a>
+      <a class="nav-link" href="#u2-classification">3. Classification Basics</a>
+      <a class="nav-link" href="#u2-dtree">4. Decision Trees</a>
+      <a class="nav-link" href="#u2-rf">Random Forest</a>
+      <a class="nav-link" href="#u2-naivebayes">5. Naïve Bayes</a>
+    </div>
+  </div>
+
+  <div class="nav-unit" data-unit="3">
+    <div class="nav-unit-header">
+      <div class="unit-badge" style="background:rgba(109,212,232,0.15);color:var(--u3);">III</div>
+      <span class="nav-unit-title">Association & Recommendations</span>
+      <span class="nav-unit-arrow">›</span>
+    </div>
+    <div class="nav-sections">
+      <a class="nav-link" href="#u3-assoc">1. Association Rules</a>
+      <a class="nav-link" href="#u3-apriori">2. Apriori Algorithm</a>
+      <a class="nav-link" href="#u3-fpgrowth">FP-Growth</a>
+      <a class="nav-link" href="#u3-apps">3. Applications</a>
+      <a class="nav-link" href="#u3-mapreduce">4. MapReduce</a>
+      <a class="nav-link" href="#u3-recsys">5. Recommendation Systems</a>
+    </div>
+  </div>
+
+  <div class="nav-unit" data-unit="4">
+    <div class="nav-unit-header">
+      <div class="unit-badge" style="background:rgba(157,122,232,0.15);color:var(--u4);">IV</div>
+      <span class="nav-unit-title">Stream Data & Real-Time</span>
+      <span class="nav-unit-arrow">›</span>
+    </div>
+    <div class="nav-sections">
+      <a class="nav-link" href="#u4-streams">1. Stream Data</a>
+      <a class="nav-link" href="#u4-computing">2. Stream Computing</a>
+      <a class="nav-link" href="#u4-realtime">3. Real-Time Analytics</a>
+      <a class="nav-link" href="#u4-graph">4. Graph Analytics</a>
+    </div>
+  </div>
+
+  <div class="nav-unit" data-unit="5">
+    <div class="nav-unit-header">
+      <div class="unit-badge" style="background:rgba(104,232,160,0.15);color:var(--u5);">V</div>
+      <span class="nav-unit-title">NoSQL Data Management</span>
+      <span class="nav-unit-arrow">›</span>
+    </div>
+    <div class="nav-sections">
+      <a class="nav-link" href="#u5-nosql">1. NoSQL Introduction</a>
+      <a class="nav-link" href="#u5-cap">CAP Theorem</a>
+      <a class="nav-link" href="#u5-schema">2. Schema-less Models</a>
+      <a class="nav-link" href="#u5-kv">3. Key-Value Stores</a>
+      <a class="nav-link" href="#u5-doc">4. Document Stores</a>
+      <a class="nav-link" href="#u5-wide">5. Wide-Column Stores</a>
+      <a class="nav-link" href="#u5-graph">6. Graph Databases</a>
+      <a class="nav-link" href="#u5-summary">Summary Comparison</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<main id="main">
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <h1>Big Data <span>Analytics</span></h1>
+    <div class="hero-meta">
+      <div class="hero-pill"><span class="dot" style="background:var(--u5)"></span> 5 Units</div>
+    </div>
+  </div>
+
+  <!-- UNIT INDEX -->
+  <div class="unit-index">
+    <a class="unit-index-card unit-1" href="#unit-1">
+      <div class="unit-num">UNIT I</div>
+      <div class="unit-name">Introduction to Big Data</div>
+    </a>
+    <a class="unit-index-card unit-2" href="#unit-2">
+      <div class="unit-num">UNIT II</div>
+      <div class="unit-name">Clustering &amp; Classification</div>
+    </a>
+    <a class="unit-index-card unit-3" href="#unit-3">
+      <div class="unit-num">UNIT III</div>
+      <div class="unit-name">Association &amp; Recommendations</div>
+    </a>
+    <a class="unit-index-card unit-4" href="#unit-4">
+      <div class="unit-num">UNIT IV</div>
+      <div class="unit-name">Stream Data &amp; Real-Time</div>
+    </a>
+    <a class="unit-index-card unit-5" href="#unit-5">
+      <div class="unit-num">UNIT V</div>
+      <div class="unit-name">NoSQL Data Management</div>
+    </a>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- UNIT I -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="unit-section unit-1" id="unit-1">
+      <div class="unit-header">
+        <div class="unit-header-badge">I</div>
+        <div class="unit-header-text">
+          <span class="unit-label">Unit One</span>
+          <h2>Introduction to Big Data</h2>
+        </div>
+      </div>
+
+      <!-- 1. Evolution -->
+      <div class="topic" id="u1-evolution">
+        <h2><span class="num">01</span> Evolution of Big Data</h2>
+        <div class="era-grid">
+          <div class="era-item">
+            <div class="era-year"><span>1800–1950</span></div>
+            <div class="era-dot"></div>
+            <div class="era-content">
+              <h4>Mechanical &amp; Early Digital Processing</h4>
+              <ul>
+                <li><strong>Joseph Marie Jacquard (1801)</strong> introduced punched cards to control textile looms — each hole directed the loom's needle, one of the earliest forms of programmatic data input.</li>
+                <li><strong>Herman Hollerith (1890)</strong> adapted punched cards for the U.S. Census, reducing a 10-year tabulation effort to just 3 months.</li>
+                <li><strong>Alan Turing (1936)</strong> proposed the Turing Machine — a theoretical model that became the foundation of all modern computing.</li>
+                <li><strong>ENIAC (1946)</strong>, the first general-purpose electronic computer, processed simple numeric data at speeds impossible for humans.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="era-item">
+            <div class="era-year"><span>1950–1990</span></div>
+            <div class="era-dot"></div>
+            <div class="era-content">
+              <h4>Rise of Digital Data &amp; Databases</h4>
+              <ul>
+                <li><strong>IBM 305 RAMAC (1956)</strong> — the first hard disk drive, storing 5MB of data despite weighing over a ton.</li>
+                <li><strong>Edgar F. Codd (1970)</strong> proposed the relational model — users should see data as tables, not care about pointers or trees — giving birth to SQL.</li>
+                <li><strong>Oracle (1977)</strong> and <strong>IBM DB2 (1983)</strong> became the commercial cornerstones of structured data management.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="era-item">
+            <div class="era-year"><span>1980s–1990s</span></div>
+            <div class="era-dot"></div>
+            <div class="era-content">
+              <h4>Personal Computers &amp; the Internet</h4>
+              <ul>
+                <li>Spreadsheets — VisiCalc (1979), Lotus 1-2-3 (1983), Microsoft Excel (1985) — brought data analysis to non-programmers.</li>
+                <li><strong>Tim Berners-Lee's World Wide Web (1991)</strong> enabled global data sharing, generating the first waves of unstructured internet data.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="era-item">
+            <div class="era-year"><span>2000s</span></div>
+            <div class="era-dot"></div>
+            <div class="era-content">
+              <h4>The Data Explosion</h4>
+              <ul>
+                <li>Social media — Facebook, Twitter, YouTube — created massive volumes of unstructured data that relational databases couldn't scale to handle.</li>
+                <li><strong>Google</strong> developed GFS and MapReduce, inspiring Yahoo to create <strong>Apache Hadoop</strong>.</li>
+                <li>Cloud platforms — AWS, Google Cloud, Microsoft Azure — enabled businesses to store and process data at scale without owning physical infrastructure.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="era-item">
+            <div class="era-year"><span>2010s</span></div>
+            <div class="era-dot"></div>
+            <div class="era-content">
+              <h4>AI, Machine Learning &amp; Real-Time Analytics</h4>
+              <ul>
+                <li><strong>Apache Kafka</strong> and <strong>Apache Spark</strong> enabled real-time streaming analytics at massive scale.</li>
+                <li>ML models trained on Big Data enabled powerful predictions — Netflix's recommendation engine uses viewing history across millions of users.</li>
+                <li><strong>Blockchain</strong> emerged as a mechanism for secure, tamper-proof distributed data transactions.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="era-item">
+            <div class="era-year"><span>2020s</span></div>
+            <div class="era-dot"></div>
+            <div class="era-content">
+              <h4>5G, IoT &amp; Quantum Computing</h4>
+              <ul>
+                <li>A 4G tower handles ~2,000 IoT devices per sq. km. A <strong>5G</strong> tower handles up to <strong>1 million devices</strong>.</li>
+                <li>Computing power hierarchy evolved: <strong>CPU → GPU → QPU</strong> (Quantum Processing Units).</li>
+                <li>QPUs process all bits simultaneously — solving complex optimization problems that would take classical computers millions of years.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Types of Data -->
+      <div class="topic" id="u1-types">
+        <h2><span class="num">02</span> Types of Data</h2>
+        <h3>Based on Structure</h3>
+        <div class="def-list">
+          <div class="def-item">
+            <div class="def-term">Structured Data</div>
+            <div class="def-desc">Organized in rows and columns with a predefined schema. Stored in relational databases (SQL, Excel). Example: employee table with ID, Name, Department, Salary columns.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Semi-Structured</div>
+            <div class="def-desc">No rigid table format but contains tags/keys for organizational hierarchy. Common in JSON, XML, HTML. Example: <code>&lt;rec&gt;&lt;n&gt;Prashant Rao&lt;/n&gt;&lt;age&gt;35&lt;/age&gt;&lt;/rec&gt;</code></div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Unstructured Data</div>
+            <div class="def-desc">No fixed format or schema. Hardest to analyze with traditional databases. Examples: CCTV footage, social media posts, voice recordings, PDF documents.</div>
+          </div>
+        </div>
+        <h3>Based on Nature</h3>
+        <p><strong>Qualitative (Categorical):</strong> <strong>Nominal</strong> — no order (colors, gender, country); <strong>Ordinal</strong> — ordered but no fixed interval (Grades: A, B, C; ratings: Good, Better, Best).</p>
+        <p><strong>Quantitative (Numerical):</strong> <strong>Discrete</strong> — whole numbers (students in a class, cars sold); <strong>Continuous</strong> — infinite values in a range (height, weight, temperature).</p>
+        <h3>Based on Source &amp; Sensitivity</h3>
+        <p><strong>Primary Data</strong> — Collected firsthand for a specific purpose (surveys, experiments). <strong>Secondary Data</strong> — Already collected and reused (census reports, government databases).</p>
+        <p><strong>Public</strong> — freely available. <strong>Private</strong> — restricted (employee records). <strong>Sensitive</strong> — requires legal protection (biometric data, medical records / PII). <strong>Confidential</strong> — highly restricted (military intelligence, trade secrets).</p>
+      </div>
+
+      <!-- 3. Introduction to Big Data -->
+      <div class="topic" id="u1-intro">
+        <h2><span class="num">03</span> Introduction to Big Data</h2>
+        <p>Big Data refers to extremely large datasets that are too voluminous, fast-moving, or diverse to be processed using traditional database methods. Definition: <em>"Extremely large datasets that may be analyzed computationally to reveal patterns, trends, and associations, especially relating to human behavior."</em></p>
+        <div class="callout callout-real">
+          <div class="callout-icon">📊</div>
+          <div class="callout-body">
+            <strong>Real Scale</strong>
+            NYSE generates ~1 TB of trade data every day. Facebook ingests 500+ TB daily. Google processes 3.5 billion searches per day. By 2021, global data reached approximately <strong>40,000 Exabytes</strong>.
+          </div>
+        </div>
+        <h3>Memory Size Reference</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Unit</th><th>Equal To</th><th>Approx. Size (Bytes)</th></tr></thead>
+            <tbody>
+              <tr><td>Kilobyte (KB)</td><td>1,024 Bytes</td><td>~1 Thousand</td></tr>
+              <tr><td>Megabyte (MB)</td><td>1,024 KB</td><td>~1 Million</td></tr>
+              <tr><td>Gigabyte (GB)</td><td>1,024 MB</td><td>~1 Billion</td></tr>
+              <tr><td>Terabyte (TB)</td><td>1,024 GB</td><td>~1 Trillion</td></tr>
+              <tr><td>Petabyte (PB)</td><td>1,024 TB</td><td>~1 Quadrillion</td></tr>
+              <tr><td>Exabyte (EB)</td><td>1,024 PB</td><td>~1 Quintillion</td></tr>
+              <tr><td>Zettabyte (ZB)</td><td>1,024 EB</td><td>~1 Sextillion</td></tr>
+              <tr><td>Yottabyte (YB)</td><td>1,024 ZB</td><td>~1 Septillion</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. 5 V's -->
+      <div class="topic" id="u1-5vs">
+        <h2><span class="num">04</span> The 5 V's of Big Data</h2>
+        <div class="vees-grid">
+          <div class="v-card">
+            <div class="v-letter" style="color:var(--u1)">V</div>
+            <div class="v-name">Volume</div>
+            <div class="v-desc">Amount of data generated. Facebook: <strong>500+ TB/day</strong></div>
+          </div>
+          <div class="v-card">
+            <div class="v-letter" style="color:var(--u2)">V</div>
+            <div class="v-name">Velocity</div>
+            <div class="v-desc">Speed of generation. Google: <strong>3.5B searches/day</strong></div>
+          </div>
+          <div class="v-card">
+            <div class="v-letter" style="color:var(--u3)">V</div>
+            <div class="v-name">Variety</div>
+            <div class="v-desc">Diversity of formats. Structured + Semi + Unstructured</div>
+          </div>
+          <div class="v-card">
+            <div class="v-letter" style="color:var(--u4)">V</div>
+            <div class="v-name">Veracity</div>
+            <div class="v-desc">Quality &amp; trustworthiness. Garbage in → Garbage out</div>
+          </div>
+          <div class="v-card">
+            <div class="v-letter" style="color:var(--u5)">V</div>
+            <div class="v-name">Value</div>
+            <div class="v-desc">Meaningfulness. IBM Watson: genomic data → treatment plans</div>
+          </div>
+        </div>
+        <h3>Volume</h3>
+        <p>Refers to the sheer scale of data generated every second from social media, sensors, transactions, and M2M communications. Requires distributed systems like Hadoop — no single machine can store it all. <strong>Example:</strong> Facebook ingests <strong>500+ terabytes</strong> of data daily from photos, messages, and likes.</p>
+        <h3>Velocity</h3>
+        <p>The rate at which data is generated and must be processed. Data flows in continuously — results must appear in milliseconds, not hours. <strong>Example:</strong> Google handles <strong>3.5 billion+ searches per day</strong> — results must appear in milliseconds.</p>
+        <h3>Variety</h3>
+        <p>Data arrives in structured (SQL tables), semi-structured (JSON, XML), and unstructured (images, videos, audio) forms. Traditional RDBMS handles only structured data. <strong>Example:</strong> A hospital deals with structured patient records, semi-structured lab reports (XML), and unstructured MRI scans — all simultaneously.</p>
+        <h3>Veracity</h3>
+        <p>Big Data can be messy — missing values, duplicates, fake entries, sensor errors. Analyzing unverified data leads to flawed conclusions: <em>garbage in, garbage out.</em> <strong>Example:</strong> Amazon product reviews contain fake/paid reviews that distort ratings.</p>
+        <h3>Value</h3>
+        <p>Raw data at petabyte scale has zero worth unless transformed into actionable insights. The most important V — all others are meaningless without extracting value. <strong>Example:</strong> IBM Watson Health analyzed genomic data from cancer patients to recommend personalized treatment plans.</p>
+      </div>
+
+      <!-- 5. Analytics -->
+      <div class="topic" id="u1-analytics">
+        <h2><span class="num">05</span> Big Data Analytics</h2>
+        <p>Big Data analytics is the process of collecting, organizing, and analyzing large datasets to discover patterns, correlations, and actionable insights. It requires specialized tools for predictive analytics, data mining, text mining, forecasting, and data optimization — collectively called <strong>high-performance analytics</strong>.</p>
+        <h3>Process of Big Data Analytics</h3>
+        <ol>
+          <li><strong>Objective</strong> — Define the primary goal. What question are we trying to answer?</li>
+          <li><strong>Collection</strong> — Gather data from diverse sources: databases, social media, sensors, logs, APIs.</li>
+          <li><strong>Validation</strong> — Check data against predefined rules to ensure quality. Since data is massive, it may contain errors, missing values, and inconsistencies.</li>
+          <li><strong>Preparation</strong> — Clean and transform data into a format compatible with the analytical tool.</li>
+          <li><strong>Analysis</strong> — Apply statistical models, ML algorithms, or query engines to extract meaningful information.</li>
+          <li><strong>Visualization</strong> — Convert results into graphs, charts, dashboards, heatmaps.</li>
+          <li><strong>Communication</strong> — Deliver insights to the organization for decision-making.</li>
+        </ol>
+        <h3>Importance of Data Validation</h3>
+        <ul>
+          <li><strong>Accuracy &amp; Reliability</strong> — Prevents erroneous conclusions from dirty data.</li>
+          <li><strong>Data Quality</strong> — Filters out corrupt, invalid, or irrelevant data at ingestion.</li>
+          <li><strong>Consistency</strong> — Ensures data from multiple sources aligns in structure and meaning (date formats, units).</li>
+          <li><strong>Compliance</strong> — Ensures data meets HIPAA (healthcare) or GDPR (EU data privacy) regulations.</li>
+          <li><strong>Efficient Decision-Making</strong> — Stakeholders can trust the analysis when underlying data is validated.</li>
+        </ul>
+        <h3>Challenges &amp; Benefits</h3>
+        <p><strong>Challenges:</strong> Breaking data silos across departments; handling unstructured data; scale that defeats traditional methods requiring distributed, parallel processing architectures.</p>
+        <p><strong>Benefits:</strong> A survey of 540 enterprise decision-makers found ~<strong>62% of organizations</strong> use Big Data analytics to improve speed and reduce operational complexity. France's Orange Telecom anonymized 2.5 billion call records from 5 million users, enabling researchers to track population movement and model disease containment strategies.</p>
+      </div>
+
+      <!-- 6. Applications -->
+      <div class="topic" id="u1-apps">
+        <h2><span class="num">06</span> Applications of Big Data</h2>
+        <div class="def-list">
+          <div class="def-item">
+            <div class="def-term">Healthcare</div>
+            <div class="def-desc">Personalized medicine, predictive diagnostics, real-time patient monitoring. <strong>IBM Watson Health</strong> analyzed genomic datasets from cancer patients to suggest DNA-specific treatment plans.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Retail</div>
+            <div class="def-desc">Demand prediction, inventory optimization, personalized promotions. <strong>Walmart</strong> processes over <strong>2.5 petabytes</strong> of customer transaction data every hour for real-time shelf restocking.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">E-Commerce</div>
+            <div class="def-desc">Recommendation engines, dynamic pricing, fraud prevention. <strong>Amazon's</strong> recommendation engine drives an estimated <strong>35% of its total revenue</strong>.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Finance</div>
+            <div class="def-desc">Real-time fraud detection, algorithmic trading, credit scoring. <strong>Mastercard's</strong> Decision Intelligence analyzes over <strong>75 billion</strong> transaction data points per year.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Media &amp; Entertainment</div>
+            <div class="def-desc">Content recommendations, original content investment decisions. <strong>Netflix</strong> greenlit <em>House of Cards</em> based on Big Data showing high overlap of users who loved David Fincher, Kevin Spacey, and the UK series.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Telecom</div>
+            <div class="def-desc">Network traffic mapping, customer churn prediction. <strong>Bharti Airtel</strong> uses predictive analytics to identify at-risk customers and offer customized retention packages.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Travel</div>
+            <div class="def-desc">Dynamic pricing, personalized packages, delay prediction. <strong>American Airlines</strong> pioneered yield management — continuously adjusting seat prices based on demand and historical booking patterns.</div>
+          </div>
+          <div class="def-item">
+            <div class="def-term">Education</div>
+            <div class="def-desc">Student performance tracking, dropout risk prediction. <strong>Georgia Tech</strong> used Big Data to analyze early assessment patterns and proactively intervene with at-risk students.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Storage -->
+      <div class="topic" id="u1-storage">
+        <h2><span class="num">07</span> Data Storage Fundamentals</h2>
+        <p>For Big Data to be stored effectively, the storage model must satisfy these requirements:</p>
+        <ul>
+          <li><strong>Scalable</strong> — Must expand horizontally (add more machines) as volume grows. You cannot just buy a bigger hard drive — you add more nodes to the cluster.</li>
+          <li><strong>Flexible</strong> — Must handle data of any format — structured tables, JSON documents, images, raw text — without a predefined schema.</li>
+          <li><strong>Distributed File System</strong> — Data is split and stored across multiple machines, enabling parallel processing.</li>
+          <li><strong>Parallel Processing</strong> — Multiple machines process different portions of data simultaneously. Sequential processing of Big Data would be computationally prohibitive.</li>
+          <li><strong>Redundant (Fault Tolerant)</strong> — Each data segment is replicated across multiple nodes. Hadoop's default replication factor is <strong>3</strong> — every data block is stored on three separate machines.</li>
+        </ul>
+      </div>
+
+      <!-- 8. Hadoop -->
+      <div class="topic" id="u1-hadoop">
+        <h2><span class="num">08</span> Hadoop Framework</h2>
+        <p>Hadoop is an open-source distributed computing framework inspired by Google's GFS and MapReduce papers. Designed to store and process massive datasets across clusters of commodity hardware.</p>
+        <h3>HDFS — Hadoop Distributed File System</h3>
+        <p><strong>NameNode (Master)</strong> — Stores metadata only. Keeps track of file-to-block mapping, block locations on DataNodes, and DataNode IP addresses. Think of it as a library index — it tells you <em>where</em> a book is, but doesn't contain the book itself.</p>
+        <p><strong>DataNode (Worker)</strong> — Stores actual data in fixed-size <strong>Blocks</strong> (default 64 MB). A 1 GB file is split into ~16 blocks of 64 MB each, distributed across DataNodes.</p>
+        <p><strong>Fault Tolerance</strong> — Default <strong>replication factor of 3</strong>. Each block stored on 3 different DataNodes. If one crashes, NameNode detects it via heartbeat signals and instructs re-replication.</p>
+        <div class="diagram-img-wrap">
+          <img src="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsarchitecture.png" alt="HDFS Architecture — NameNode and DataNodes" loading="lazy" onerror="this.closest('.diagram-img-wrap').style.display='none';this.closest('.diagram-img-wrap').nextElementSibling.style.display='block';">
+        </div>
+        <div class="ascii-diagram" style="display:none">
+<pre>                   HDFS ARCHITECTURE
+          ┌─────────────────────────────────────┐
+          │            CLIENT                   │
+          │   "Write file.txt (200 MB)"         │
+          └────────────┬────────────────────────┘
+                       │  ① Ask where to store
+                       ▼
+          ┌────────────────────────┐
+          │       NAMENODE         │  ← Metadata only
+          │  file.txt →            │    (file→block map)
+          │   Block1 → DN1, DN2    │
+          │   Block2 → DN2, DN3    │
+          └────────────┬───────────┘
+                       │  ② Returns block locations
+                       ▼
+          ┌──────────┐  ┌──────────┐  ┌──────────────┐
+          │DataNode 1│  │DataNode 2│  │  DataNode 3  │
+          │ Block1 ✓ │  │ Block1 ✓ │  │   Block2 ✓   │
+          │ Block3 ✓ │  │ Block2 ✓ │  │   Block3 ✓   │
+          └──────────┘  └──────────┘  └──────────────┘
+              (replication factor = 3: each block on 3 nodes)</pre>
+        </div>
+
+        <h3>GFS — Google File System</h3>
+        <p>Developed by Google internally (2003), GFS inspired Hadoop's HDFS. <strong>GFS Master</strong> is analogous to HDFS's NameNode. <strong>Chunkservers</strong> (analogous to DataNodes) store actual data chunks. <strong>Clients</strong> contact the Master for metadata, then directly communicate with Chunkservers — reducing load on the master. Default chunk size: <strong>64 MB</strong>. Designed for large sequential reads, not random access.</p>
+        <div class="diagram-img-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Google_File_System_Design.svg/800px-Google_File_System_Design.svg.png" alt="Google File System Architecture" loading="lazy" onerror="this.closest('.diagram-img-wrap').style.display='none';this.closest('.diagram-img-wrap').nextElementSibling.style.display='block';">
+        </div>
+        <div class="ascii-diagram" style="display:none">
+<pre>                        GFS ARCHITECTURE
+                ┌─────────────────────────────────┐
+                │           CLIENT                │
+                └────┬────────────────────────┬───┘
+                     │ ① Metadata request     │ ③ Read/Write data
+                     ▼                        │    directly
+          ┌──────────────────┐                │
+          │    GFS MASTER    │                │
+          │  - File → Chunks │                │
+          │  - Chunk locations                │
+          └────────┬─────────┘                │
+                   │ ② Chunk locations        │
+                   └──────────────────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+      ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+      │ Chunkserver │ │ Chunkserver │ │ Chunkserver │
+      │  Chunk A ✓  │ │  Chunk A ✓  │ │  Chunk B ✓  │
+      └─────────────┘ └─────────────┘ └─────────────┘</pre>
+        </div>
+      </div>
+
+      <!-- 9. HPA -->
+      <div class="topic" id="u1-hpa">
+        <h2><span class="num">09</span> High-Performance Architecture</h2>
+        <p>A high-performance architecture is engineered to maximize efficiency, speed, and scalability for data-intensive workloads — essential for Big Data analytics, scientific simulations, real-time processing, and ML.</p>
+        <div class="layers-stack">
+          <div class="layer-row"><div class="layer-num">1</div><div class="layer-body" style="border-color:var(--u1)"><strong>Data Collection &amp; Ingestion Layer</strong> — Entry point gathering data from IoT, logs, databases, social APIs. <strong>Apache Kafka</strong> acts as a high-throughput buffer (LinkedIn: 7 trillion messages/day).</div></div>
+          <div class="layer-row"><div class="layer-num">2</div><div class="layer-body" style="border-color:var(--u2)"><strong>Data Storage Layer</strong> — HDFS for batch storage, Amazon S3 for cloud object storage, Apache Cassandra for distributed NoSQL.</div></div>
+          <div class="layer-row"><div class="layer-num">3</div><div class="layer-body" style="border-color:var(--u3)"><strong>Data Processing &amp; Compute Layer</strong> — <strong>Apache Spark</strong> processes data in-memory — up to <strong>100x faster</strong> than Hadoop's disk-based MapReduce for iterative ML algorithms.</div></div>
+          <div class="layer-row"><div class="layer-num">4</div><div class="layer-body" style="border-color:var(--u4)"><strong>Real-Time Data Processing</strong> — <strong>Kafka + Spark Streaming</strong> or <strong>Flink</strong> for fraud detection, live recommendations. VISA processes transactions in <strong>under 2 milliseconds</strong>.</div></div>
+          <div class="layer-row"><div class="layer-num">5</div><div class="layer-body" style="border-color:var(--u5)"><strong>Analytics &amp; ML Layer</strong> — Spark MLlib, TensorFlow, scikit-learn. Feature engineering, model training, batch prediction.</div></div>
+          <div class="layer-row"><div class="layer-num">6</div><div class="layer-body" style="border-color:var(--u1)"><strong>Visualization &amp; Reporting Layer</strong> — <strong>Tableau</strong>, <strong>Power BI</strong>, Apache Superset convert complex outputs into dashboards.</div></div>
+          <div class="layer-row"><div class="layer-num">7</div><div class="layer-body" style="border-color:var(--u2)"><strong>High-Performance Networking</strong> — InfiniBand &amp; 10/100 GbE Ethernet. Google's <strong>Jupiter network fabric</strong> achieves petabit-scale bisection bandwidth.</div></div>
+          <div class="layer-row"><div class="layer-num">8</div><div class="layer-body" style="border-color:var(--u3)"><strong>Distributed &amp; Parallel Computing</strong> — Tasks broken into sub-tasks across multiple machines/cores. MapReduce, Spark RDD, GPU-accelerated deep learning.</div></div>
+        </div>
+      </div>
+    </div><!-- /unit-1 -->
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- UNIT II -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="unit-section unit-2" id="unit-2">
+      <div class="unit-header">
+        <div class="unit-header-badge">II</div>
+        <div class="unit-header-text">
+          <span class="unit-label">Unit Two</span>
+          <h2>Clustering &amp; Classification</h2>
+        </div>
+      </div>
+
+      <!-- 1. Clustering Intro -->
+      <div class="topic" id="u2-clustering-intro">
+        <h2><span class="num">01</span> Introduction to Data Clustering</h2>
+        <p>Clustering is an <strong>unsupervised machine learning</strong> technique that groups similar data points together without being told the categories in advance — like dumping a box of mixed fruits on a table and naturally grouping apples, bananas, and oranges based on similarity, with no prior labeling. Formally, it partitions a dataset into groups (clusters) such that objects within the same cluster are more similar to each other than to objects in other clusters. Similarity is measured using <strong>Euclidean distance</strong>, <strong>Manhattan distance</strong>, or <strong>cosine similarity</strong>.</p>
+        <h3>Key Properties of Good Clusters</h3>
+        <ul>
+          <li><strong>High intra-cluster similarity</strong> — Points within a cluster should be as close to each other as possible.</li>
+          <li><strong>Low inter-cluster similarity</strong> — Points in different clusters should be as far apart as possible.</li>
+        </ul>
+        <div class="callout callout-real">
+          <div class="callout-icon">🌐</div>
+          <div class="callout-body"><strong>Real-World Use</strong> <strong>Google News</strong> uses clustering to group articles about the same event from hundreds of different sources, presenting them as a single story rather than hundreds of redundant links.</div>
+        </div>
+      </div>
+
+      <!-- 2. K-Means -->
+      <div class="topic" id="u2-kmeans">
+        <h2><span class="num">02</span> K-Means Clustering</h2>
+        <p>K-Means is an iterative, partition-based clustering algorithm — like splitting students into study groups: randomly pick 3 "group leaders," every student joins the nearest leader, then each leader moves to the actual average position of their group. Repeat until no one switches. Formally, it minimizes the <strong>Within-Cluster Sum of Squares (WCSS)</strong>, also called <em>inertia</em>:</p>
+        <div class="formula-block">
+          \[ WCSS = \sum_{i=1}^{k} \sum_{x \in C_i} ||x - \mu_i||^2 \]
+          <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim)">where μᵢ is the centroid of cluster Cᵢ</p>
+        </div>
+        <h3>Algorithm Steps</h3>
+        <ol>
+          <li><strong>Initialize</strong> — Choose k initial centroids randomly (or using smarter <strong>K-Means++ initialization</strong>).</li>
+          <li><strong>Assignment Step</strong> — Assign every data point to the nearest centroid using Euclidean distance: <code>distance = √[(x₁-x₂)² + (y₁-y₂)²]</code></li>
+          <li><strong>Update Step</strong> — Recalculate each centroid as the <strong>mean</strong> of all points currently assigned to it.</li>
+          <li><strong>Repeat</strong> — Repeat steps 2–3 until centroids no longer change (convergence).</li>
+        </ol>
+        <div class="diagram-img-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/K-means_convergence.gif/440px-K-means_convergence.gif" alt="K-Means Clustering Convergence Animation" loading="lazy" style="max-width:440px;" onerror="this.closest('.diagram-img-wrap').style.display='none';this.closest('.diagram-img-wrap').nextElementSibling.style.display='block';">
+          <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">K-Means convergence (Wikimedia Commons, CC BY-SA)</p>
+        </div>
+        <div class="ascii-diagram" style="display:none">
+<pre>         K-MEANS: ITERATION VISUALIZATION (k=2)
+  Iteration 1:               Iteration 2:
+  Random centroids           Updated centroids
+  ×  ×  ×  [C1]   ○  ○      ×  ×  ×  [C1]  ○  ○
+  Converged:
+  Cluster 1: { × × × }    Cluster 2: { ○ ○ ○ }</pre>
+        </div>
+
+        <div class="solved-box">
+          <div class="solved-box-header"><span class="icon">🔢</span><span>Solved Numerical Example — K-Means (k=2)</span></div>
+          <div class="solved-box-body">
+            <p><strong>Dataset:</strong> 6 points on a number line. k = 2. Initial centroids: <strong>C1 = 2</strong>, <strong>C2 = 8</strong></p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Point</th><th>Value</th></tr></thead>
+                <tbody>
+                  <tr><td>P1</td><td>1</td></tr><tr><td>P2</td><td>2</td></tr><tr><td>P3</td><td>3</td></tr>
+                  <tr><td>P4</td><td>7</td></tr><tr><td>P5</td><td>8</td></tr><tr><td>P6</td><td>9</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p><strong>Iteration 1 — Assignment Step:</strong></p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Point</th><th>dist to C1=2</th><th>dist to C2=8</th><th>Cluster</th></tr></thead>
+                <tbody>
+                  <tr><td>P1=1</td><td>|1−2| = 1</td><td>|1−8| = 7</td><td><strong>C1</strong></td></tr>
+                  <tr><td>P2=2</td><td>|2−2| = 0</td><td>|2−8| = 6</td><td><strong>C1</strong></td></tr>
+                  <tr><td>P3=3</td><td>|3−2| = 1</td><td>|3−8| = 5</td><td><strong>C1</strong></td></tr>
+                  <tr><td>P4=7</td><td>|7−2| = 5</td><td>|7−8| = 1</td><td><strong>C2</strong></td></tr>
+                  <tr><td>P5=8</td><td>|8−2| = 6</td><td>|8−8| = 0</td><td><strong>C2</strong></td></tr>
+                  <tr><td>P6=9</td><td>|9−2| = 7</td><td>|9−8| = 1</td><td><strong>C2</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p><strong>Update Step:</strong> New C1 = (1+2+3)/3 = <strong>2</strong> (unchanged). New C2 = (7+8+9)/3 = <strong>8</strong> (unchanged).</p>
+            <p>Centroids did not change → <strong>Algorithm converged in 1 iteration.</strong></p>
+            <p><strong>Final Clusters:</strong> Cluster 1: {1,2,3} — centroid=2 | Cluster 2: {7,8,9} — centroid=8</p>
+          </div>
+        </div>
+
+        <h3>Choosing K — The Elbow Method</h3>
+        <p>The <strong>Elbow Method</strong> plots WCSS against different values of k. As k increases, WCSS decreases. The "elbow" — where the rate of decrease sharply slows — is the optimal k. If the elbow is at k=3, adding a 4th cluster provides diminishing returns.</p>
+        <div class="diagram-img-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Elbow_Method.svg/600px-Elbow_Method.svg.png" alt="Elbow Method for choosing optimal K in K-Means" loading="lazy" onerror="this.closest('.diagram-img-wrap').style.display='none';this.closest('.diagram-img-wrap').nextElementSibling.style.display='block';">
+        </div>
+        <div class="ascii-diagram" style="display:none">
+<pre>         ELBOW METHOD — Choosing optimal k
+  WCSS
+   │
+  High ─  *
+          │ \
+          │  *
+          │   *  ← ELBOW (optimal k=3)
+          │    ────*────────*────────*──
+  Low  ─        k=3   k=4   k=5
+         k=1  k=2  k=3  k=4  k=5  k=6</pre>
+        </div>
+        <h3>Limitations</h3>
+        <ul>
+          <li>Must specify k in advance — not always known.</li>
+          <li>Sensitive to outliers — a single extreme point can pull a centroid far from the true cluster center.</li>
+          <li>Assumes clusters are roughly spherical and equally sized — fails for elongated or irregular shapes.</li>
+          <li>Results vary based on initial centroid placement — running K-Means multiple times with different initializations is standard practice.</li>
+        </ul>
+        <div class="callout callout-real">
+          <div class="callout-icon">🛒</div>
+          <div class="callout-body"><strong>Real-World Use</strong> <strong>Amazon</strong> uses K-Means clustering on customer purchase behavior to identify segments for targeted marketing campaigns.</div>
+        </div>
+      </div>
+
+      <!-- 3. Classification -->
+      <div class="topic" id="u2-classification">
+        <h2><span class="num">03</span> Basics of Classification</h2>
+        <p>Classification is predicting which category a new item belongs to based on labeled examples — like a spam filter trained on thousands of labeled emails that can judge new ones. Formally, it is a <strong>supervised machine learning</strong> task where an algorithm learns a mapping function <code>f: X → Y</code> from labeled training data, where X is the input feature space and Y is the set of discrete class labels.</p>
+        <h3>Key Terms</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Training Set</div><div class="def-desc">Labeled data used to train the model.</div></div>
+          <div class="def-item"><div class="def-term">Test Set</div><div class="def-desc">Unseen labeled data used to evaluate model performance.</div></div>
+          <div class="def-item"><div class="def-term">Feature</div><div class="def-desc">An input variable used for prediction. Example: email word count, sender domain.</div></div>
+          <div class="def-item"><div class="def-term">Label / Class</div><div class="def-desc">The output category being predicted. Example: spam / not-spam.</div></div>
+          <div class="def-item"><div class="def-term">Classifier</div><div class="def-desc">The model that performs the classification.</div></div>
+        </div>
+        <h3>Types of Classification</h3>
+        <ul>
+          <li><strong>Binary Classification</strong> — Two possible classes. Example: Spam detection (spam / not spam), disease diagnosis (positive / negative).</li>
+          <li><strong>Multi-class Classification</strong> — More than two classes. Example: Digit recognition (0–9), news categorization.</li>
+          <li><strong>Multi-label Classification</strong> — An instance can belong to multiple classes. Example: A movie tagged as both "Action" and "Thriller."</li>
+        </ul>
+        <h3>Evaluation Metrics</h3>
+        <p><strong>Accuracy</strong> = (TP + TN) / (TP + TN + FP + FN) &nbsp;|&nbsp; <strong>Precision</strong> = TP / (TP + FP) &nbsp;|&nbsp; <strong>Recall</strong> = TP / (TP + FN)</p>
+        <div class="formula-block">
+          \[ F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall} \]
+          <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim)">Harmonic mean of Precision and Recall. A Confusion Matrix summarizes TP, TN, FP, FN.</p>
+        </div>
+      </div>
+
+      <!-- 4. Decision Trees -->
+      <div class="topic" id="u2-dtree">
+        <h2><span class="num">04</span> Decision Trees</h2>
+        <p>A Decision Tree works like the game "20 Questions" — start at the top, ask a question, go left or right based on the answer, keep going until you reach a verdict at the bottom. Formally, it's a tree where each <strong>internal node</strong> represents a test on a feature, each <strong>branch</strong> represents an outcome, and each <strong>leaf node</strong> represents a class label.</p>
+        <h3>How Splitting Works — Entropy &amp; Information Gain</h3>
+        <div class="formula-block">
+          \[ Entropy(S) = -\sum_{i=1}^{c} p_i \log_2(p_i) \]
+          <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim)">Entropy = 0: perfectly pure. Entropy = 1: maximum uncertainty (evenly split classes).</p>
+        </div>
+        <p><strong>Information Gain</strong> = Entropy(parent) − weighted average Entropy(children). The feature with the <strong>highest information gain</strong> is selected as the splitting criterion.</p>
+        <p><strong>Gini Impurity</strong> (used in CART): <code>Gini = 1 − Σpᵢ²</code></p>
+        <h3>Example: Loan Approval Tree</h3>
+        <div class="diagram-img-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Cart_tree_kyphosis.png/600px-Cart_tree_kyphosis.png" alt="Decision Tree example diagram" loading="lazy" onerror="this.closest('.diagram-img-wrap').style.display='none';this.closest('.diagram-img-wrap').nextElementSibling.style.display='block';">
+          <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">Example: Decision Tree (CART) — Wikimedia Commons</p>
+        </div>
+        <div class="ascii-diagram" style="display:none">
+<pre>                [Income > 50K?]
+               /               \
+             Yes               No
+              |                 |
+     [Credit Score > 700?]   [REJECT]
+        /          \
+      Yes           No
+       |             |
+   [APPROVE]    [Employment > 2 yrs?]
+                  /       \
+                Yes        No
+                 |          |
+           [APPROVE]    [REJECT]</pre>
+        </div>
+        <div class="callout callout-real"><div class="callout-icon">🏦</div><div class="callout-body"><strong>Real-World Use</strong> <strong>FICO</strong> (Fair Isaac Corporation) uses decision tree-based models in credit scoring — the same principle banks use to decide whether to approve loan applications.</div></div>
+        <h3>Advantages &amp; Disadvantages</h3>
+        <ul>
+          <li><strong>Advantages:</strong> Highly interpretable; handles numerical and categorical features; no feature scaling needed; can model non-linear relationships.</li>
+          <li><strong>Disadvantages:</strong> Prone to <strong>overfitting</strong> — a too-deep tree memorizes training data and fails on new data. Also unstable — small data changes produce very different trees.</li>
+        </ul>
+        <h3>Pruning</h3>
+        <ul>
+          <li><strong>Pre-pruning (Early Stopping)</strong> — Stop growing the tree before it perfectly fits training data (e.g., minimum samples per leaf = 5).</li>
+          <li><strong>Post-pruning</strong> — Grow the full tree, then trim branches that don't improve performance on validation data.</li>
+        </ul>
+      </div>
+
+      <!-- Random Forest -->
+      <div class="topic" id="u2-rf">
+        <h2><span class="num">04b</span> Random Forest</h2>
+        <p>A <strong>Random Forest</strong> is an ensemble of many Decision Trees — instead of trusting one tree's judgment, you train hundreds of trees on different random subsets of data and features, then let them vote. One biased tree makes mistakes; 500 diverse trees together are far more reliable.</p>
+        <h3>How It Works — Step by Step</h3>
+        <ul>
+          <li><strong>Step 1 — Bootstrap Sampling (Bagging):</strong> From the original dataset of n rows, randomly sample n rows <em>with replacement</em> for each tree. ~37% of rows are left out per tree — called <strong>Out-of-Bag (OOB)</strong> samples.</li>
+          <li><strong>Step 2 — Feature Randomness:</strong> At each node split, only a <strong>random subset of m features</strong> is evaluated (typically m = √total_features for classification). Forces diversity — different trees focus on different features.</li>
+          <li><strong>Step 3 — Grow Each Tree Fully:</strong> Each tree is grown without pruning — deliberately allowed to overfit its bootstrap sample. Individual trees have high variance but low bias.</li>
+          <li><strong>Step 4 — Aggregation (Voting):</strong> For a new data point, every tree independently predicts a class. Final prediction = <strong>majority vote</strong> (classification) or <strong>mean</strong> (regression).</li>
+          <li><strong>Step 5 — OOB Evaluation:</strong> The ~37% of rows not used to train each tree serve as a built-in validation set. OOB error is computed without needing a separate test set.</li>
+        </ul>
+        <h3>Why It Beats a Single Decision Tree</h3>
+        <ul>
+          <li>A single tree overfits — it memorizes noise in training data. Random Forest's diversity averages out individual errors.</li>
+          <li>The key insight: <strong>errors of different trees are uncorrelated</strong> (because of random feature selection). When errors are uncorrelated, averaging reduces variance dramatically.</li>
+          <li>Mathematically: if each tree has error rate p and errors are independent, ensemble error approaches 0 as number of trees grows.</li>
+        </ul>
+        <h3>Feature Importance</h3>
+        <ul>
+          <li>Random Forest naturally ranks features by how much they improve splits (measured by Gini impurity reduction) averaged across all trees.</li>
+          <li>Useful not just for prediction but for <strong>understanding which features matter most</strong> — a loan default model might reveal "credit utilization ratio" matters more than "annual income."</li>
+        </ul>
+        <h3>Key Hyperparameters</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Meaning</th><th>Typical Value</th></tr></thead>
+            <tbody>
+              <tr><td><code>n_estimators</code></td><td>Number of trees. More = more stable but slower.</td><td>100–500</td></tr>
+              <tr><td><code>max_features</code></td><td>Features to consider at each split. Lower = more diversity.</td><td>√total_features</td></tr>
+              <tr><td><code>max_depth</code></td><td>Maximum depth per tree. None = fully grown.</td><td>None</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-real"><div class="callout-icon">🎮</div><div class="callout-body"><strong>Real-World Use</strong> <strong>Kaggle competition winners</strong> use Random Forest as a go-to baseline. <strong>Microsoft's Xbox Kinect</strong> uses Random Forest to classify body part positions from depth images in real time — processing 200 frames per second.</div></div>
+      </div>
+
+      <!-- 5. Naive Bayes -->
+      <div class="topic" id="u2-naivebayes">
+        <h2><span class="num">05</span> Naïve Bayes Classifier</h2>
+        <p>Naïve Bayes is a probabilistic classifier based on <strong>Bayes' Theorem</strong> — like a doctor diagnosing a patient by calculating: "Given these symptoms, which disease is most probable?" The "naïve" part means we assume each feature is completely <strong>independent</strong> of the others, which is rarely true but works surprisingly well in practice.</p>
+        <div class="formula-block">
+          \[ P(C|X) = \frac{P(X|C) \cdot P(C)}{P(X)} \]
+          <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim)">Posterior = Likelihood × Prior / Evidence. We compare posteriors across classes — P(X) cancels out.</p>
+          \[ \hat{C} = \arg\max_{C} P(C) \cdot \prod_{i=1}^{n} P(x_i|C) \]
+        </div>
+
+        <div class="solved-box">
+          <div class="solved-box-header"><span class="icon">🎾</span><span>Solved Numerical — Play Tennis Prediction</span></div>
+          <div class="solved-box-body">
+            <p><strong>Training Data (10 days):</strong></p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Day</th><th>Weather</th><th>Wind</th><th>Played Tennis?</th></tr></thead>
+                <tbody>
+                  <tr><td>D1</td><td>Sunny</td><td>Weak</td><td>No</td></tr>
+                  <tr><td>D2</td><td>Sunny</td><td>Strong</td><td>No</td></tr>
+                  <tr><td>D3</td><td>Overcast</td><td>Weak</td><td>Yes</td></tr>
+                  <tr><td>D4</td><td>Rainy</td><td>Weak</td><td>Yes</td></tr>
+                  <tr><td>D5</td><td>Rainy</td><td>Weak</td><td>Yes</td></tr>
+                  <tr><td>D6</td><td>Rainy</td><td>Strong</td><td>No</td></tr>
+                  <tr><td>D7</td><td>Overcast</td><td>Strong</td><td>Yes</td></tr>
+                  <tr><td>D8</td><td>Sunny</td><td>Weak</td><td>No</td></tr>
+                  <tr><td>D9</td><td>Sunny</td><td>Weak</td><td>Yes</td></tr>
+                  <tr><td>D10</td><td>Rainy</td><td>Weak</td><td>Yes</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p><strong>Goal:</strong> Predict if tennis is played on a day with <strong>Weather = Sunny, Wind = Weak</strong></p>
+            <div class="step-block">
+              <div class="step-num">1</div>
+              <div class="step-content"><strong>Prior Probabilities:</strong> P(Yes) = 6/10 = 0.6 | P(No) = 4/10 = 0.4</div>
+            </div>
+            <div class="step-block">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <strong>Likelihoods — from Yes days (D3,D4,D5,D7,D9,D10):</strong><br>
+                P(Sunny|Yes) = 1/6 ≈ 0.167 | P(Weak|Yes) = 5/6 ≈ 0.833<br><br>
+                <strong>From No days (D1,D2,D6,D8):</strong><br>
+                P(Sunny|No) = 3/4 = 0.75 | P(Weak|No) = 2/4 = 0.5
+              </div>
+            </div>
+            <div class="step-block">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <strong>Compute Posteriors:</strong><br>
+                P(Yes|Sunny,Weak) ∝ 0.6 × 0.167 × 0.833 = <strong>0.0835</strong><br>
+                P(No|Sunny,Weak) ∝ 0.4 × 0.75 × 0.5 = <strong>0.15</strong>
+              </div>
+            </div>
+            <div class="step-block">
+              <div class="step-num">4</div>
+              <div class="step-content">Since 0.15 &gt; 0.0835 → <strong>Prediction: Tennis will NOT be played.</strong><br><em>Sunny weather has been historically strongly associated with not playing — the model correctly predicts No.</em></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Types of Naïve Bayes</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Gaussian NB</div><div class="def-desc">Features are continuous, assumed to follow a normal distribution. Used for numerical data like sensor readings.</div></div>
+          <div class="def-item"><div class="def-term">Multinomial NB</div><div class="def-desc">Used for discrete count data. Most common for text classification (word frequencies).</div></div>
+          <div class="def-item"><div class="def-term">Bernoulli NB</div><div class="def-desc">Features are binary (present/absent). For document classification based on word presence, not frequency.</div></div>
+        </div>
+        <h3>Advantages &amp; Disadvantages</h3>
+        <ul>
+          <li><strong>Advantages:</strong> Extremely fast to train; works well with small training datasets; handles high-dimensional data (thousands of text features); naturally handles multi-class problems.</li>
+          <li><strong>Disadvantages:</strong> Independence assumption is almost never true; zero-frequency problem solved by <strong>Laplace Smoothing</strong> (add 1 to all counts); not a good raw probability estimator.</li>
+        </ul>
+        <div class="callout callout-real"><div class="callout-icon">📧</div><div class="callout-body"><strong>Real-World Use</strong> <strong>Google's Gmail</strong> spam filter uses a form of Naïve Bayes as one component of its multi-layer filtering system.</div></div>
+      </div>
+    </div><!-- /unit-2 -->
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- UNIT III -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="unit-section unit-3" id="unit-3">
+      <div class="unit-header">
+        <div class="unit-header-badge">III</div>
+        <div class="unit-header-text">
+          <span class="unit-label">Unit Three</span>
+          <h2>Association &amp; Recommendation Systems</h2>
+        </div>
+      </div>
+
+      <!-- 1. Association Rules -->
+      <div class="topic" id="u3-assoc">
+        <h2><span class="num">01</span> Introduction to Association Rules</h2>
+        <p>Association rule mining finds patterns of the form "if a customer buys X, they also tend to buy Y." The classic example: <strong>Walmart discovered in the 1990s</strong> that customers who buy diapers frequently also buy beer — no intuitive reason, but the data revealed it. Walmart placed beer near diapers — boosting sales of both. Formally, rules take the form <code>{Antecedent} → {Consequent}</code>, quantified using Support, Confidence, and Lift.</p>
+        <h3>Key Metrics</h3>
+        <div class="formula-block">
+          \[ Support(A \cup B) = \frac{\text{Transactions containing both A and B}}{\text{Total transactions}} \]
+        </div>
+        <div class="formula-block">
+          \[ Confidence(A \rightarrow B) = \frac{Support(A \cup B)}{Support(A)} \]
+          <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim)">Confidence = 0.80 means 80% of the time A is purchased, B is also purchased.</p>
+        </div>
+        <div class="formula-block">
+          \[ Lift(A \rightarrow B) = \frac{Confidence(A \rightarrow B)}{Support(B)} \]
+          <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim)">Lift &gt; 1: positive correlation. Lift = 1: independent. Lift &lt; 1: negative correlation. Lift of 2.5 means A makes B 2.5× more likely.</p>
+        </div>
+      </div>
+
+      <!-- 2. Apriori -->
+      <div class="topic" id="u3-apriori">
+        <h2><span class="num">02</span> Apriori Algorithm</h2>
+        <p>Apriori is built on one key insight: <strong>if an itemset is infrequent, any larger set containing it will also be infrequent</strong> — so we prune it early. We build upward: start with single items, keep only frequent ones, generate pairs, keep frequent pairs, then triplets — like a pyramid where only items that pass each layer advance. This is the <strong>Apriori property (downward closure / anti-monotone property)</strong>.</p>
+        <div class="callout callout-tip"><div class="callout-icon">💡</div><div class="callout-body"><strong>Apriori Property</strong> If an itemset is infrequent, ALL its supersets are also infrequent. This lets us prune the search space dramatically.</div></div>
+        <h3>Algorithm Steps</h3>
+        <ol>
+          <li><strong>Generate L₁</strong> — Scan database, count each item. Keep items with support ≥ min_sup.</li>
+          <li><strong>Generate C₂</strong> — Join frequent 1-itemsets with themselves to generate candidate pairs.</li>
+          <li><strong>Prune C₂</strong> — Remove candidates whose subsets are not in L₁.</li>
+          <li><strong>Generate L₂</strong> — Scan database, count C₂ candidates. Keep those with support ≥ min_sup.</li>
+          <li><strong>Repeat</strong> — Until no more frequent itemsets can be found.</li>
+          <li><strong>Generate Rules</strong> — For each frequent itemset, generate all possible rules. Keep rules with confidence ≥ min_conf.</li>
+        </ol>
+        <div class="solved-box">
+          <div class="solved-box-header"><span class="icon">🛒</span><span>Worked Example — min_sup = 50% (2/4 transactions)</span></div>
+          <div class="solved-box-body">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Transaction</th><th>Items</th></tr></thead>
+                <tbody>
+                  <tr><td>T1</td><td>Bread, Milk, Diaper</td></tr>
+                  <tr><td>T2</td><td>Bread, Beer, Diaper</td></tr>
+                  <tr><td>T3</td><td>Milk, Beer, Diaper, Cola</td></tr>
+                  <tr><td>T4</td><td>Bread, Milk, Beer, Diaper</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p><strong>L₁:</strong> Bread: 3✓, Milk: 3✓, Diaper: 4✓, Beer: 3✓ — All frequent</p>
+            <p><strong>L₂:</strong> {Bread,Milk}:2✓, {Bread,Diaper}:3✓, {Bread,Beer}:2✓, {Milk,Diaper}:3✓, {Milk,Beer}:2✓, {Diaper,Beer}:3✓</p>
+            <p><strong>Sample Rule:</strong> For {Diaper, Beer} with support = 3/4 = 0.75:</p>
+            <ul>
+              <li><code>{Diaper} → {Beer}</code>: Confidence = 0.75/1.0 = <strong>75%</strong></li>
+              <li><code>{Beer} → {Diaper}</code>: Confidence = 0.75/0.75 = <strong>100%</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FP-Growth -->
+      <div class="topic" id="u3-fpgrowth">
+        <h2><span class="num">FP</span> FP-Growth (Frequent Pattern Growth)</h2>
+        <p>FP-Growth eliminates Apriori's two biggest bottlenecks: multiple database scans and massive candidate generation. The core idea: compress the entire transaction database into a compact tree structure called an <strong>FP-Tree</strong> in just <strong>2 database scans</strong>, then mine frequent patterns directly from the tree — never generating candidate itemsets.</p>
+        <h3>Why FP-Growth over Apriori?</h3>
+        <ul>
+          <li>Apriori scans the database once per itemset size level (k scans for k-length itemsets).</li>
+          <li>FP-Growth always uses exactly <strong>2 database scans</strong> regardless of pattern length.</li>
+          <li>No candidate generation means no memory wastage on infrequent itemsets.</li>
+          <li>In practice, FP-Growth is <strong>10–100x faster</strong> than Apriori on dense datasets.</li>
+        </ul>
+        <h3>Key Concepts</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">FP-Tree</div><div class="def-desc">A compressed, prefix-tree representation of the transaction database. Shared prefixes are merged, making the tree much smaller than the original database.</div></div>
+          <div class="def-item"><div class="def-term">Header Table</div><div class="def-desc">Lists all frequent items sorted by frequency descending. Each entry links all nodes of the same item together via <strong>node-link pointers</strong>.</div></div>
+          <div class="def-item"><div class="def-term">Conditional Pattern Base</div><div class="def-desc">For item X, all prefix paths in the FP-Tree ending at a node labeled X. Tells you "what items always appear alongside X."</div></div>
+          <div class="def-item"><div class="def-term">Conditional FP-Tree</div><div class="def-desc">An FP-Tree built from X's Conditional Pattern Base. Mining this tree gives all frequent itemsets containing X.</div></div>
+        </div>
+        <h3>Algorithm Steps</h3>
+        <ol>
+          <li><strong>Scan 1:</strong> Count support of every item. Remove below min_sup. Sort remaining by frequency descending — this is the <strong>frequent item order</strong>.</li>
+          <li><strong>Build FP-Tree (Scan 2):</strong> Re-read each transaction, keep only frequent items, sort in frequent item order, insert into tree. Shared prefixes are merged (count incremented). Build Header Table simultaneously.</li>
+          <li><strong>Mine the FP-Tree:</strong> For each item (least frequent first), find Conditional Pattern Base, build Conditional FP-Tree, extract frequent itemsets recursively.</li>
+        </ol>
+
+        <div class="solved-box">
+          <div class="solved-box-header"><span class="icon">🌳</span><span>Solved Numerical — FP-Growth (min_sup = 3)</span></div>
+          <div class="solved-box-body">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>TID</th><th>Items</th></tr></thead>
+                <tbody>
+                  <tr><td>T1</td><td>A, B, C, D</td></tr>
+                  <tr><td>T2</td><td>A, B, D</td></tr>
+                  <tr><td>T3</td><td>A, B</td></tr>
+                  <tr><td>T4</td><td>A, C, D</td></tr>
+                  <tr><td>T5</td><td>B, C</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="step-block">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <strong>Scan 1 — Count &amp; Sort:</strong>
+                <div class="table-wrap" style="margin:8px 0">
+                  <table><thead><tr><th>Item</th><th>Count</th><th>≥ min_sup=3?</th></tr></thead>
+                  <tbody>
+                    <tr><td>A</td><td>4</td><td>✓</td></tr>
+                    <tr><td>B</td><td>4</td><td>✓</td></tr>
+                    <tr><td>C</td><td>3</td><td>✓</td></tr>
+                    <tr><td>D</td><td>3</td><td>✓</td></tr>
+                  </tbody></table>
+                </div>
+                <p>Sort order: <strong>A(4) → B(4) → C(3) → D(3)</strong></p>
+              </div>
+            </div>
+
+            <div class="step-block">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <strong>Scan 2 — Reorder transactions &amp; build FP-Tree:</strong>
+                <div class="table-wrap" style="margin:8px 0">
+                  <table><thead><tr><th>TID</th><th>Reordered</th></tr></thead>
+                  <tbody>
+                    <tr><td>T1</td><td>A→B→C→D</td></tr>
+                    <tr><td>T2</td><td>A→B→D</td></tr>
+                    <tr><td>T3</td><td>A→B</td></tr>
+                    <tr><td>T4</td><td>A→C→D</td></tr>
+                    <tr><td>T5</td><td>B→C</td></tr>
+                  </tbody></table>
+                </div>
+                <p><strong>Final FP-Tree (after all insertions):</strong></p>
+                <div class="ascii-diagram" style="margin:8px 0">
+<pre>root
+ ├─ A:4
+ │   ├─ B:3
+ │   │   ├─ C:1
+ │   │   │   └─ D:1
+ │   │   └─ D:1
+ │   └─ C:1
+ │       └─ D:1
+ └─ B:1
+     └─ C:1</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-block">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <strong>Mine FP-Tree (D → C → B → A):</strong>
+                <div class="table-wrap" style="margin:8px 0">
+                  <table>
+                    <thead><tr><th>Item</th><th>Cond. Pattern Base</th><th>Items in CPB</th><th>Frequent Itemsets Found</th></tr></thead>
+                    <tbody>
+                      <tr><td>D</td><td>{A,B,C}:1, {A,B}:1, {A,C}:1</td><td>A=3✓, B=2✗, C=2✗</td><td>{D:3}, {A,D:3}</td></tr>
+                      <tr><td>C</td><td>{A,B}:1, {A}:1, {B}:1</td><td>A=2✗, B=2✗</td><td>{C:3} only</td></tr>
+                      <tr><td>B</td><td>{A}:3, {}:1</td><td>A=3✓</td><td>{B:4}, {A,B:3}</td></tr>
+                      <tr><td>A</td><td>empty prefix</td><td>—</td><td>{A:4} only</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <p><strong>Final Result — All Frequent Itemsets (support ≥ 3):</strong></p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Itemset</th><th>Support</th></tr></thead>
+                <tbody>
+                  <tr><td>{A}</td><td>4</td></tr><tr><td>{B}</td><td>4</td></tr>
+                  <tr><td>{C}</td><td>3</td></tr><tr><td>{D}</td><td>3</td></tr>
+                  <tr><td>{A, B}</td><td>3</td></tr><tr><td>{A, D}</td><td>3</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p><em>All itemsets found with only 2 database scans and zero candidate generation.</em></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Applications -->
+      <div class="topic" id="u3-apps">
+        <h2><span class="num">03</span> Practical Applications of Association Rules</h2>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Market Basket Analysis</div><div class="def-desc"><strong>Target</strong> famously predicted a teenage girl's pregnancy before her father knew, based on purchasing patterns (unscented lotion, large bags of cotton balls, hand sanitizer) — association rules revealing sensitive correlations.</div></div>
+          <div class="def-item"><div class="def-term">Cross-Selling</div><div class="def-desc">E-commerce "Frequently Bought Together" suggestions. Amazon's "Customers who bought this also bought..." feature is powered by association rule-style recommendations.</div></div>
+          <div class="def-item"><div class="def-term">Medical Diagnosis</div><div class="def-desc">Mining patient records to find co-occurring symptoms and diseases. Finding that symptom A + B frequently lead to disease X enables early preventive treatment.</div></div>
+          <div class="def-item"><div class="def-term">Fraud Detection</div><div class="def-desc">In insurance, association rules identify suspicious claim patterns — certain combinations of symptoms and treatments frequently appear in fraudulent auto accident claims.</div></div>
+          <div class="def-item"><div class="def-term">Web Usage Mining</div><div class="def-desc">Websites analyze clickstream logs to find frequently co-visited pages, enabling better navigation design and personalized content delivery.</div></div>
+        </div>
+      </div>
+
+      <!-- 4. MapReduce -->
+      <div class="topic" id="u3-mapreduce">
+        <h2><span class="num">04</span> MapReduce for Association Analysis</h2>
+        <p>Association rule mining on billions of transactions (Walmart, Amazon) cannot run on a single machine — the dataset can't even fit in memory. MapReduce distributes computation across a cluster.</p>
+        <h3>MapReduce Paradigm</h3>
+        <p><strong>Map Phase</strong> — Each mapper receives a partition of the data and emits <code>(key, value)</code> pairs — e.g., each item in a transaction as key with value 1.</p>
+        <p><strong>Shuffle &amp; Sort Phase</strong> — Framework automatically groups all values by key, so all counts for the same item arrive at the same reducer.</p>
+        <p><strong>Reduce Phase</strong> — Each reducer receives a key and a list of values, and aggregates them — summing all 1s to get total support count.</p>
+        <div class="diagram-img-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/WordCountFlow.png/800px-WordCountFlow.png" alt="MapReduce Word Count Flow Diagram" loading="lazy" onerror="this.closest('.diagram-img-wrap').style.display='none';this.closest('.diagram-img-wrap').nextElementSibling.style.display='block';">
+          <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">MapReduce Flow — Wikimedia Commons</p>
+        </div>
+        <div class="ascii-diagram" style="display:none">
+<pre>                    MAPREDUCE FLOW
+  INPUT (split into chunks)
+  ┌──────────┐  ┌──────────┐  ┌──────────┐
+  │ Chunk 1  │  │ Chunk 2  │  │ Chunk 3  │
+  └────┬─────┘  └────┬─────┘  └────┬─────┘
+       ▼              ▼              ▼
+  ┌─────────┐   ┌─────────┐   ┌─────────┐
+  │ Mapper1 │   │ Mapper2 │   │ Mapper3 │
+  └────┬────┘   └────┬────┘   └────┬────┘
+       └──────────────┼──────────────┘
+                      │ SHUFFLE & SORT
+          ┌───────────┼───────────┐
+      (A,[1,1,1]) (B,[1,1])   (C,[1])
+          ▼           ▼           ▼
+     ┌─────────┐ ┌─────────┐ ┌─────────┐
+     │  A = 3  │ │  B = 2  │ │  C = 1  │
+     └─────────┘ └─────────┘ └─────────┘</pre>
+        </div>
+        <h3>Apriori with MapReduce &amp; SON Algorithm</h3>
+        <p><strong>Round 1 (L₁):</strong> Map: emit (item, 1) for each item. Reduce: sum counts, output items ≥ min_sup.</p>
+        <p><strong>Round 2 (L₂):</strong> Map: generate all pairs from each transaction. Reduce: sum counts, output pairs ≥ min_sup. Each round requires one MapReduce job — generating Lₖ requires k rounds.</p>
+        <p><strong>SON Algorithm</strong> (Savasere, Omiecinski, Navathe) — Optimized two-pass algorithm: Pass 1 finds frequent itemsets locally in each chunk (using min_sup scaled to chunk size). Pass 2 counts global support across the full dataset using local frequent itemsets as candidates.</p>
+      </div>
+
+      <!-- 5. Recommendation Systems -->
+      <div class="topic" id="u3-recsys">
+        <h2><span class="num">05</span> Recommendation Systems</h2>
+        <h3>Types</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Content-Based Filtering</div><div class="def-desc">Recommends items similar to items the user previously liked, based on item features. <strong>Pandora's Music Genome Project</strong> analyzes 450+ musical attributes per song and recommends based on attributes of songs you've liked.</div></div>
+          <div class="def-item"><div class="def-term">Collaborative Filtering</div><div class="def-desc">Recommends items that similar users liked, without using content features. "Users like you also liked..." <strong>Amazon</strong> uses item-based CF (items change less frequently than user preferences).</div></div>
+          <div class="def-item"><div class="def-term">Matrix Factorization</div><div class="def-desc">Represents user-item interaction matrix as the product of two lower-dimensional matrices using SVD or ALS. <strong>Netflix Prize</strong> ($1M competition) was won using ensemble matrix factorization — reducing Netflix's prediction error by 10%.</div></div>
+          <div class="def-item"><div class="def-term">Hybrid Systems</div><div class="def-desc"><strong>Netflix</strong> uses hybrid: collaborative filtering + content-based analysis of metadata (genre, cast, director) + deep learning on visual features of film thumbnails to optimize click-through.</div></div>
+        </div>
+        <h3>Challenges</h3>
+        <ul>
+          <li><strong>Cold Start Problem</strong> — New users or new items have no interaction history. Solution: ask for initial preferences during onboarding, or use content-based until enough data is collected.</li>
+          <li><strong>Sparsity</strong> — Most users interact with a tiny fraction of all available items. A Netflix user-item matrix (millions × thousands of titles) is extremely sparse. Solution: matrix factorization, dimensionality reduction.</li>
+          <li><strong>Scalability</strong> — Computing similarity between all user pairs is O(n²). Solution: Approximate nearest neighbor algorithms like <strong>Locality Sensitive Hashing (LSH)</strong> or distributed Spark.</li>
+        </ul>
+      </div>
+    </div><!-- /unit-3 -->
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- UNIT IV -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="unit-section unit-4" id="unit-4">
+      <div class="unit-header">
+        <div class="unit-header-badge">IV</div>
+        <div class="unit-header-text">
+          <span class="unit-label">Unit Four</span>
+          <h2>Stream Data &amp; Real-Time Analytics</h2>
+        </div>
+      </div>
+
+      <!-- 1. Stream Data -->
+      <div class="topic" id="u4-streams">
+        <h2><span class="num">01</span> Understanding Stream Data</h2>
+        <p>Traditional data processing is like filling a bucket, then analyzing it when full. Stream data processing is like measuring the flow as it comes out of the tap — you analyze it in real time, as it flows, without waiting for it to accumulate. Formally, <strong>data streams</strong> are sequences of records generated continuously and rapidly from IoT sensors, social media feeds, financial markets, clickstreams, and log files.</p>
+        <h3>Key Characteristics</h3>
+        <ul>
+          <li><strong>Unbounded</strong> — There is no defined end to the stream.</li>
+          <li><strong>Ordered</strong> — Records arrive in time order (or approximately so).</li>
+          <li><strong>Non-revisitable</strong> — In pure streaming systems, you cannot go back and reprocess old data.</li>
+          <li><strong>High velocity</strong> — Data arrives faster than it can be stored persistently in traditional databases.</li>
+        </ul>
+        <h3>Sliding Windows</h3>
+        <p>Since stream data is infinite, analysis is performed over <strong>windows</strong> — finite subsets of the stream:</p>
+        <ul>
+          <li><strong>Tumbling Window</strong> — Fixed-size, non-overlapping time windows. Example: Aggregate Twitter mentions every 5 minutes; the window resets after each period.</li>
+          <li><strong>Sliding Window</strong> — Overlapping windows that move at a fixed step. Example: Count tweets in the last 10 minutes, updated every 1 minute.</li>
+          <li><strong>Session Window</strong> — Opens when user activity begins and closes after a period of inactivity.</li>
+        </ul>
+      </div>
+
+      <!-- 2. Stream Computing -->
+      <div class="topic" id="u4-computing">
+        <h2><span class="num">02</span> Introduction to Stream Computing</h2>
+        <p>The fundamental limitation of batch processing (Hadoop MapReduce) is <strong>latency</strong>. For fraud detection, you cannot detect a fraudulent credit card transaction 30 minutes after it happened. Stream computing processes data <strong>as it arrives</strong>, enabling responses in <strong>milliseconds to seconds</strong>.</p>
+        <h3>Key Stream Processing Frameworks</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Apache Kafka</div><div class="def-desc">Distributed, fault-tolerant message streaming platform. Producers publish to <strong>topics</strong>; consumers subscribe and read in real time. Kafka persists messages on disk for configurable periods (replay capability). <strong>LinkedIn</strong> originally developed Kafka to handle <strong>7 trillion messages/day</strong>. Architecture: Producer → Topic (Partitions) → Broker → Consumer → Zookeeper.</div></div>
+          <div class="def-item"><div class="def-term">Apache Spark Streaming</div><div class="def-desc">Extension of Spark. Uses a <strong>micro-batch</strong> model: incoming data is divided into small batches (e.g., every 1 second) and processed using Spark's batch engine. <strong>Structured Streaming</strong> (newer API) treats a stream as an unbounded table that continuously grows.</div></div>
+          <div class="def-item"><div class="def-term">Apache Flink</div><div class="def-desc">True <strong>event-driven</strong> stream processing — processes each event individually as it arrives (unlike Spark's micro-batch). Achieves genuine real-time with low latency. <strong>Alibaba</strong> uses Flink to process <strong>4.4 trillion events/day</strong> during Singles' Day.</div></div>
+          <div class="def-item"><div class="def-term">Apache Storm</div><div class="def-desc">One of the earliest real-time frameworks. Uses a <strong>topology</strong> model: a DAG of <strong>Spouts</strong> (data sources) and <strong>Bolts</strong> (processing units). <strong>Twitter</strong> developed Storm to process trending topics in real time.</div></div>
+        </div>
+        <h3>Lambda Architecture</h3>
+        <p>A common Big Data architecture combining batch and stream processing:</p>
+        <ul>
+          <li><strong>Batch Layer</strong> — Recomputes results on full historical dataset periodically. Slow but accurate. Hadoop/Spark batch jobs.</li>
+          <li><strong>Speed Layer</strong> — Processes real-time stream data for low-latency results. Approximate but fresh. Apache Storm/Flink.</li>
+          <li><strong>Serving Layer</strong> — Merges results from both layers to answer queries. Apache Cassandra, HBase.</li>
+        </ul>
+        <div class="ascii-diagram">
+<pre>                    LAMBDA ARCHITECTURE
+                    ───────────────────
+                ┌───────────────────────┐
+                │      DATA SOURCE      │
+                │  (events / streams)   │
+                └──────────┬────────────┘
+                           │
+               ┌───────────┴────────────┐
+               │                        │
+               ▼                        ▼
+  ┌────────────────────┐    ┌─────────────────────┐
+  │    BATCH LAYER     │    │    SPEED LAYER       │
+  │  (Hadoop / Spark)  │    │  (Storm / Flink /   │
+  │  Full recompute    │    │   Spark Streaming)   │
+  │  on all history    │    │  Real-time only,     │
+  │  Slow but accurate │    │  Fast but approx.    │
+  └─────────┬──────────┘    └──────────┬───────────┘
+            │                          │
+            └──────────┬───────────────┘
+                       ▼
+           ┌───────────────────────┐
+           │     SERVING LAYER     │
+           │  (HBase / Cassandra)  │
+           │  Merges batch views   │
+           │  + real-time views    │
+           │  → answers queries    │
+           └───────────────────────┘</pre>
+        </div>
+        <div class="callout callout-real"><div class="callout-icon">🐦</div><div class="callout-body"><strong>Real-World Use</strong> <strong>Twitter</strong> uses Lambda Architecture to provide both real-time trending topics (speed layer) and accurate long-term analytics (batch layer).</div></div>
+      </div>
+
+      <!-- 3. Real-Time Analytics -->
+      <div class="topic" id="u4-realtime">
+        <h2><span class="num">03</span> Real-Time Analytics Applications</h2>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Financial Fraud Detection</div><div class="def-desc"><strong>VISA's</strong> fraud detection system processes over <strong>65,000 transaction messages per second</strong>, each scored and flagged within 2 milliseconds — before the merchant even receives authorization.</div></div>
+          <div class="def-item"><div class="def-term">Real-Time Recommendations</div><div class="def-desc"><strong>Spotify's</strong> recommendations update as you listen. If you skip a song, the system immediately adjusts the queue using real-time processing of your current behavior.</div></div>
+          <div class="def-item"><div class="def-term">Network Intrusion Detection</div><div class="def-desc">Telecom networks use stream processing to detect cyberattacks in real time. Unusual traffic spikes and malicious IP signatures trigger alerts within seconds.</div></div>
+          <div class="def-item"><div class="def-term">Smart Traffic Management</div><div class="def-desc">Cities like <strong>Singapore</strong> and <strong>Los Angeles</strong> use IoT sensors to stream traffic density data to central analytics platforms. Real-time processing adjusts signal timing dynamically.</div></div>
+          <div class="def-item"><div class="def-term">Healthcare Monitoring</div><div class="def-desc">ICU systems stream vital signs (heart rate, blood pressure, SpO₂) to real-time analytics engines. <strong>Philips HealthSuite</strong> processes telemetry from millions of connected medical devices globally.</div></div>
+          <div class="def-item"><div class="def-term">Social Trend Detection</div><div class="def-desc">Twitter's trending topics algorithm processes hundreds of millions of tweets per day as a stream, detecting emerging trends by analyzing hashtag velocity and engagement using sliding windows.</div></div>
+        </div>
+      </div>
+
+      <!-- 4. Graph Analytics -->
+      <div class="topic" id="u4-graph">
+        <h2><span class="num">04</span> Introduction to Graph Analytics</h2>
+        <p>A graph is a network of connected entities — Facebook is a graph of people (nodes) connected by friendships (edges); the internet is a graph of web pages connected by hyperlinks. Formally, a <strong>graph</strong> <code>G = (V, E)</code> consists of <strong>Vertices (V)</strong> — entities — and <strong>Edges (E)</strong> — relationships. Graphs can be <strong>Directed</strong> (A → B ≠ B → A, like Twitter followers), <strong>Undirected</strong> (A—B, like Facebook friendships), or <strong>Weighted</strong> (edges with numerical values like road distances).</p>
+        <h3>Key Algorithms</h3>
+        <div class="formula-block">
+          \[ PR(A) = \frac{1-d}{N} + d \sum_{i \in Links(A)} \frac{PR(i)}{L(i)} \]
+          <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim)"><strong>PageRank</strong> — d is damping factor (0.85), N is total pages, L(i) is outbound links from page i. Foundation of Google Search.</p>
+        </div>
+        <ul>
+          <li><strong>Shortest Path (Dijkstra's Algorithm)</strong> — Finds the minimum-cost path between two nodes. <strong>Google Maps</strong> uses variants of Dijkstra's and A* to find fastest routes in real time, factoring in live traffic.</li>
+          <li><strong>Community Detection (Louvain Algorithm)</strong> — Groups densely interconnected nodes. <strong>Facebook</strong> uses community detection to identify social circles; posts from within your community rank higher in News Feed.</li>
+          <li><strong>Degree Centrality</strong> — Number of edges connected to a node (friends count).</li>
+          <li><strong>Betweenness Centrality</strong> — How often a node lies on the shortest path between other nodes. Used in <strong>epidemiology</strong> to identify super-spreaders.</li>
+          <li><strong>Eigenvector Centrality</strong> — A node is important if connected to other important nodes. PageRank is a variant.</li>
+        </ul>
+        <h3>Graph Processing Frameworks &amp; Applications</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Apache Giraph</div><div class="def-desc">Open-source framework inspired by Google's Pregel. Used at <strong>Facebook</strong> to process social graphs with over 1 trillion edges.</div></div>
+          <div class="def-item"><div class="def-term">Neo4j</div><div class="def-desc">Most widely used graph database. <strong>eBay</strong> uses Neo4j to power shipping route recommendations, finding optimal logistics paths across its global fulfillment network.</div></div>
+          <div class="def-item"><div class="def-term">GraphX</div><div class="def-desc">Apache Spark's graph analytics library, integrating graph computation with Spark's distributed data processing ecosystem.</div></div>
+          <div class="def-item"><div class="def-term">LinkedIn</div><div class="def-desc">Uses graph analytics for "People You May Know" — finding second and third-degree connections. Six Degrees of Separation is a real graph property.</div></div>
+          <div class="def-item"><div class="def-term">Google Knowledge Graph</div><div class="def-desc">Represents 500+ billion facts about 5 billion entities as a graph (entities and relationships), enabling information panels in search results.</div></div>
+        </div>
+      </div>
+    </div><!-- /unit-4 -->
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- UNIT V -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="unit-section unit-5" id="unit-5">
+      <div class="unit-header">
+        <div class="unit-header-badge">V</div>
+        <div class="unit-header-text">
+          <span class="unit-label">Unit Five</span>
+          <h2>NoSQL Data Management</h2>
+        </div>
+      </div>
+
+      <!-- 1. NoSQL Intro -->
+      <div class="topic" id="u5-nosql">
+        <h2><span class="num">01</span> NoSQL Databases — Introduction</h2>
+        <p>Relational databases are like a perfectly organized spreadsheet — every row has the same columns, and everything fits neatly. This is great for bank records but terrible for storing a tweet (0 to 100 hashtags), a product catalog (each product has entirely different attributes), or a social network (where relationships matter more than the data itself). <strong>NoSQL</strong> (Not Only SQL) refers to a broad class of database systems that abandon fixed tabular schemas in favor of flexibility, horizontal scaling, and distributed architecture.</p>
+        <h3>Why NoSQL?</h3>
+        <ul>
+          <li><strong>Fixed Schema</strong> — Adding a new attribute to a table with billions of rows in RDBMS requires an expensive <code>ALTER TABLE</code> operation that can take hours and lock the table.</li>
+          <li><strong>Vertical Scaling Only</strong> — SQL databases scale by upgrading hardware. NoSQL scales <strong>horizontally</strong> — add more commodity machines to the cluster.</li>
+          <li><strong>Joins are Expensive at Scale</strong> — JOINing tables with billions of rows is computationally intensive. NoSQL avoids joins by denormalizing data.</li>
+          <li><strong>Unstructured Data</strong> — RDBMS cannot natively store JSON, arrays, or nested objects. NoSQL handles these naturally.</li>
+        </ul>
+      </div>
+
+      <!-- CAP Theorem -->
+      <div class="topic" id="u5-cap">
+        <h2><span class="num">CAP</span> CAP Theorem</h2>
+        <p>The <strong>CAP Theorem</strong> (Brewer's Theorem) states that a distributed system can guarantee at most <strong>2 of 3</strong> properties simultaneously:</p>
+        <ul>
+          <li><strong>Consistency (C)</strong> — Every read receives the most recent write (or an error). All nodes see the same data at the same time.</li>
+          <li><strong>Availability (A)</strong> — Every request receives a response (not necessarily the most recent data).</li>
+          <li><strong>Partition Tolerance (P)</strong> — The system continues to operate even if some nodes cannot communicate (network partition).</li>
+        </ul>
+        <p>Since network partitions are unavoidable in distributed systems, systems must choose between <strong>CP</strong> (consistent but may be unavailable during partition) and <strong>AP</strong> (always available but may return stale data).</p>
+        <div class="diagram-img-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/CAP_Theorem_Venn_Diagram.png/600px-CAP_Theorem_Venn_Diagram.png" alt="CAP Theorem Venn Diagram" loading="lazy" onerror="this.closest('.diagram-img-wrap').style.display='none';this.closest('.diagram-img-wrap').nextElementSibling.style.display='block';">
+          <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">CAP Theorem — Wikimedia Commons</p>
+        </div>
+        <div class="ascii-diagram" style="display:none">
+<pre>                    CAP THEOREM TRIANGLE
+                         Consistency
+                              △
+                             /|\
+               MongoDB,     / | \  Traditional
+               HBase,      /CP |CA\  RDBMS
+               Zookeeper  /────┴────\
+                         /    AP     \
+                        / Cassandra,  \
+                       /  CouchDB,     \
+                      /   DynamoDB      \
+                    ──────────────────────
+             Partition Tolerance (always required)</pre>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Systems</th><th>Trade-off</th></tr></thead>
+            <tbody>
+              <tr><td><strong>CP</strong></td><td>MongoDB, HBase, Apache Zookeeper</td><td>Consistent but may be unavailable during partition</td></tr>
+              <tr><td><strong>AP</strong></td><td>Cassandra, CouchDB, DynamoDB</td><td>Always available but may return stale data</td></tr>
+              <tr><td><strong>CA</strong></td><td>Traditional RDBMS (MySQL, PostgreSQL)</td><td>Fail in distributed environments (partitions inevitable)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>PACELC</strong> is an extension of CAP that also considers the trade-off between latency and consistency even when there is no partition.</p>
+      </div>
+
+      <!-- 2. Schema-less -->
+      <div class="topic" id="u5-schema">
+        <h2><span class="num">02</span> Schema-less Models and Their Flexibility</h2>
+        <p>In relational databases, schemas are <strong>rigid</strong> and predefined. In NoSQL databases, schemas are <strong>dynamic</strong> — each record can have different fields. You do not need to define the structure in advance.</p>
+        <ul>
+          <li><strong>Rapid iteration</strong> — Developers can add new fields to documents without database migrations.</li>
+          <li><strong>Heterogeneous data</strong> — Different records in the same collection can have completely different shapes. An e-commerce database might have electronics with voltage/wattage fields and clothing with size/color fields — in the same collection.</li>
+          <li><strong>JSON-native storage</strong> — Most NoSQL document stores natively store data as JSON or BSON, matching web API formats.</li>
+          <li><strong>Tradeoff</strong> — Schema-less databases push validation responsibility to the application layer. No database-enforced constraints.</li>
+        </ul>
+        <p><strong>Mongoose</strong> (ODM for MongoDB in Node.js) adds optional schema enforcement back to MongoDB — giving NoSQL flexibility with some SQL-like structure guarantees.</p>
+      </div>
+
+      <!-- 3. Key-Value -->
+      <div class="topic" id="u5-kv">
+        <h2><span class="num">03</span> Key-Value Stores</h2>
+        <p>A key-value store is like a giant dictionary or hashmap — you store data under a unique key, and to retrieve it, you just provide that key. The database doesn't know or care what the value contains; it stores and retrieves it at extremely high speed. Operations: <code>PUT(key, value)</code>, <code>GET(key) → value</code>, <code>DELETE(key)</code>.</p>
+        <h3>When to Use</h3>
+        <ul>
+          <li>Data access is <strong>always by primary key</strong> — you always know the exact key.</li>
+          <li>You need <strong>extremely fast reads and writes</strong> — no parsing, no query planning.</li>
+          <li>The data is <strong>self-contained</strong> per key — no need to query across keys.</li>
+        </ul>
+        <h3>Examples</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Redis</div><div class="def-desc">In-memory key-value store with support for complex value types: strings, lists, sets, sorted sets, hashes. Microsecond latency (stored in RAM). Used as a <strong>caching layer</strong> in front of slower databases. <strong>Twitter</strong> caches timelines in Redis — each user's timeline is a sorted set, delivering sub-millisecond tweet feeds.</div></div>
+          <div class="def-item"><div class="def-term">Amazon DynamoDB</div><div class="def-desc">Fully managed, distributed key-value store. Guarantees <strong>single-digit millisecond latency</strong> at any scale. <strong>Samsung</strong> uses DynamoDB to handle 4M+ requests/second from IoT devices during peak hours.</div></div>
+          <div class="def-item"><div class="def-term">Apache Cassandra</div><div class="def-desc">(Also a wide-column store) Originally designed at Facebook for the Inbox search feature. Optimized for write-heavy workloads. <strong>Netflix</strong> uses Cassandra to store viewing history and manage session data for 200M+ subscribers globally.</div></div>
+        </div>
+        <h3>Limitations</h3>
+        <ul>
+          <li>No complex queries — cannot filter by value or perform JOINs.</li>
+          <li>No relationships between keys — data model must be designed around key access patterns.</li>
+          <li>Requires denormalization — the same data may need to be stored under multiple keys for different access patterns.</li>
+        </ul>
+      </div>
+
+      <!-- 4. Document Stores -->
+      <div class="topic" id="u5-doc">
+        <h2><span class="num">04</span> Document Stores</h2>
+        <p>Document stores are key-value stores where the "value" is a structured document (usually JSON) that the database understands and can query inside. Instead of a flat key → opaque blob, you store rich nested objects and can query any field within them — like a self-describing record that contains everything you need without JOINing other tables.</p>
+        <h3>MongoDB</h3>
+        <p>The most widely used document database. <strong>Database → Collections → Documents (BSON objects)</strong>. No fixed schema — documents in the same collection can have completely different fields, but any field can be indexed.</p>
+        <pre><code class="language-json">{
+  "_id": ObjectId("507f1f77bcf86cd799439011"),
+  "name": "John Doe",
+  "email": "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b010403052b0e130a061b070e45080406">[email&#160;protected]</a>",
+  "orders": [
+    {"product": "Laptop", "price": 999.99, "qty": 1},
+    {"product": "Mouse",  "price": 29.99,  "qty": 2}
+  ],
+  "address": { "city": "Mumbai", "pin": "400001" }
+}</code></pre>
+        <pre><code class="language-javascript">// Find all users from Mumbai
+db.users.find({"address.city": "Mumbai"})
+// Find expensive orders
+db.users.find({"orders.price": {$gt: 500}})</code></pre>
+        <div class="callout callout-real"><div class="callout-icon">🚗</div><div class="callout-body"><strong>Real-World Use</strong> <strong>Uber</strong> uses MongoDB to store geospatial data — driver locations as GeoJSON documents. MongoDB's geospatial indexes allow querying "find all available drivers within 5 km of this GPS coordinate" in real time.</div></div>
+        <h3>CouchDB</h3>
+        <p>Stores data as JSON documents, accessed via a <strong>RESTful HTTP API</strong>. Uses <strong>Multi-Version Concurrency Control (MVCC)</strong>. Designed for <strong>offline-first</strong> applications that can sync data when connectivity is restored. <strong>IBM Cloudant</strong> (built on CouchDB) is used in healthcare apps where field workers update patient records offline and sync to the central database later.</p>
+        <h3>When to Use Document Stores</h3>
+        <ul>
+          <li>Content management systems, catalogs, user profiles, product listings.</li>
+          <li>Applications with flexible, evolving schemas.</li>
+          <li>When data is naturally hierarchical (nested objects and arrays).</li>
+          <li>When you need to query by multiple fields, not just a primary key.</li>
+        </ul>
+      </div>
+
+      <!-- 5. Wide-Column -->
+      <div class="topic" id="u5-wide">
+        <h2><span class="num">05</span> Tabular (Wide-Column) Data Stores</h2>
+        <p>Wide-column stores are like a spreadsheet where each row can have completely different columns — and there can be millions of them. Each row is identified by a <strong>row key</strong>, and under it, you store any set of column-value pairs. Ideal for time-series data (each timestamp is a column) and sparse data. Formally:</p>
+        <pre><code>Row Key → Column Family → Column Qualifier → Value (with timestamp)</code></pre>
+        <p>Each cell is <strong>timestamped</strong>, allowing multiple versions to coexist. Column families are predefined at schema creation, but columns within a family are added dynamically at write time.</p>
+
+        <h3>Apache HBase</h3>
+        <p>Open-source wide-column store built on HDFS, modeled after Google BigTable. <strong>HMaster</strong> manages region assignment (analogous to HDFS NameNode). <strong>RegionServers</strong> manage regions (contiguous row key ranges). <strong>ZooKeeper</strong> coordinates distributed components.</p>
+        <pre><code>Row Key: "user_12345"
+  Column Family: profile
+    name: "Ravi Sharma"  |  city: "Delhi"
+  Column Family: activity
+    last_login: "2026-02-20 10:30:00"  |  total_purchases: "47"</code></pre>
+        <div class="callout callout-real"><div class="callout-icon">💬</div><div class="callout-body"><strong>Real-World Use</strong> <strong>Facebook</strong> originally used HBase to power its Messages feature, storing billions of messages. At peak, HBase handled over <strong>20 petabytes</strong> of message data.</div></div>
+
+        <h3>Google BigTable</h3>
+        <p>Google's proprietary wide-column store (2006 paper by Chang et al.). Powers Google Analytics (website traffic for billions of sites), Google Earth (satellite imagery tiles keyed by coordinates and zoom level), and Gmail. Key insight: using row key, column family, qualifier, and timestamp as a multi-dimensional key achieves efficient <strong>range scans</strong>.</p>
+
+        <h3>Apache Cassandra</h3>
+        <p><strong>Distributed, leaderless</strong> wide-column store developed at Facebook (2008). Designed for high write throughput and high availability with no single point of failure.</p>
+        <ul>
+          <li><strong>Peer-to-peer architecture</strong> — No master node. Every node is equal. Data replicated automatically.</li>
+          <li><strong>Tunable Consistency</strong> — Choose consistency level per query: ONE (fastest) to ALL (slowest). QUORUM is common middle ground.</li>
+          <li><strong>Ring topology</strong> — Nodes arranged in a logical ring. Data distributed using <strong>consistent hashing</strong> on the partition key.</li>
+          <li><strong>CQL</strong> (Cassandra Query Language) — SQL-like syntax but with NoSQL semantics. No JOINs or subqueries.</li>
+        </ul>
+        <pre><code class="language-sql">CREATE TABLE user_activity (
+    user_id UUID,
+    activity_time TIMESTAMP,
+    action TEXT,
+    details TEXT,
+    PRIMARY KEY (user_id, activity_time)
+) WITH CLUSTERING ORDER BY (activity_time DESC);</code></pre>
+        <div class="callout callout-real"><div class="callout-icon">📸</div><div class="callout-body"><strong>Real-World Use</strong> <strong>Instagram</strong> uses Cassandra to store over <strong>1 billion user photos</strong> and their metadata, supporting billions of reads and writes daily.</div></div>
+      </div>
+
+      <!-- 6. Graph Databases -->
+      <div class="topic" id="u5-graph">
+        <h2><span class="num">06</span> Graph Databases</h2>
+        <p>Graph databases store data as a network of nodes and edges — finding "friends of friends" in a relational database requires expensive multi-level JOINs; in a graph database, you simply traverse the edges, like following paths on a map instead of doing address lookups in a spreadsheet. <strong>Native graph processing</strong> systems like Neo4j store relationships directly on disk adjacent to the nodes they connect, enabling <strong>index-free adjacency</strong>: to find connected nodes, you follow a pointer — no index lookup required.</p>
+        <h3>Neo4j and Cypher Query Language</h3>
+        <pre><code class="language-cypher">// Find all friends of Alice who also know Bob
+MATCH (alice:Person {name: "Alice"})-[:FRIEND]->(friend)-[:FRIEND]->(bob:Person {name: "Bob"})
+RETURN friend.name
+
+// Find the shortest path between Alice and Charlie
+MATCH path = shortestPath((alice:Person {name: "Alice"})-[*]-(charlie:Person {name: "Charlie"}))
+RETURN path</code></pre>
+        <div class="callout callout-real"><div class="callout-icon">🗃️</div><div class="callout-body"><strong>Real-World Use</strong> <strong>Panama Papers investigation</strong> — Journalists at ICIJ used Neo4j to analyze 11.5 million leaked documents about offshore tax havens. The network of companies, people, and accounts — impossible to analyze with spreadsheets — was mapped as a graph, revealing links between world leaders and offshore accounts.</div></div>
+        <h3>Use Cases for Graph Databases</h3>
+        <div class="def-list">
+          <div class="def-item"><div class="def-term">Fraud Detection</div><div class="def-desc">A single fraudulent transaction looks innocent in isolation, but a graph reveals the same phone number, address, or device connected to dozens of different accounts. <strong>PayPal</strong> uses graph-based fraud detection to protect hundreds of millions of transactions.</div></div>
+          <div class="def-item"><div class="def-term">Knowledge Graphs</div><div class="def-desc"><strong>Google's Knowledge Graph</strong> (2012) represents 500+ billion facts about 5 billion entities. Enables complex NL queries ("Who is the wife of the president of France?") by traversing entity relationships.</div></div>
+          <div class="def-item"><div class="def-term">IT Operations</div><div class="def-desc">IT infrastructure naturally forms a graph. When a service goes down, graph traversal quickly identifies which upstream dependencies caused the failure.</div></div>
+          <div class="def-item"><div class="def-term">Drug Discovery</div><div class="def-desc">Pharmaceutical companies model gene-protein-disease-drug interactions as a graph. Graph traversal reveals indirect relationships — drug targeting gene A might affect disease X via Gene A → Protein B → Pathway C → Disease X. <strong>AstraZeneca</strong> uses graph analytics in its drug discovery pipeline.</div></div>
+        </div>
+        <h3>Neo4j vs Relational DB for Relationship Queries</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>System</th><th>Query: 4th-degree connections in 1M-user social network</th></tr></thead>
+            <tbody>
+              <tr><td>Relational DB (MySQL)</td><td>4+ hours (multiple expensive JOINs)</td></tr>
+              <tr><td>Neo4j (Graph DB)</td><td><strong>2 seconds</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="topic" id="u5-summary">
+        <h2><span class="num">∑</span> Summary Comparison of NoSQL Databases</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Examples</th><th>Data Model</th><th>Best For</th><th>Real-World Example</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Key-Value</strong></td>
+                <td>Redis, DynamoDB</td>
+                <td>key → value</td>
+                <td>Caching, sessions, counters</td>
+                <td>Twitter timeline cache (Redis)</td>
+              </tr>
+              <tr>
+                <td><strong>Document</strong></td>
+                <td>MongoDB, CouchDB</td>
+                <td>key → JSON doc</td>
+                <td>Catalogs, profiles, CMS</td>
+                <td>Uber driver locations (MongoDB)</td>
+              </tr>
+              <tr>
+                <td><strong>Wide-Column</strong></td>
+                <td>HBase, Cassandra</td>
+                <td>row → column families</td>
+                <td>Time-series, analytics, IoT</td>
+                <td>Instagram photos (Cassandra)</td>
+              </tr>
+              <tr>
+                <td><strong>Graph</strong></td>
+                <td>Neo4j</td>
+                <td>nodes + edges + properties</td>
+                <td>Relationships, networks, fraud</td>
+                <td>Panama Papers (Neo4j)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /unit-5 -->
+
+  </div><!-- /content -->
+</main><!-- /main -->
+
+<button id="back-top" title="Back to top">↑</button>
+
+<script>
+// ── Sidebar collapse toggle ──
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebar = document.getElementById('sidebar');
+
+// Start expanded on desktop, collapsed on mobile
+if (window.innerWidth <= 900) {
+  document.body.classList.add('sidebar-collapsed');
+}
+
+sidebarToggle.addEventListener('click', () => {
+  document.body.classList.toggle('sidebar-collapsed');
+  // Save preference
+  localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+});
+
+// Restore preference on load (desktop only)
+if (window.innerWidth > 900) {
+  const saved = localStorage.getItem('sidebarCollapsed');
+  if (saved === 'true') document.body.classList.add('sidebar-collapsed');
+}
+
+// Close sidebar on mobile when a nav link is clicked
+if (window.innerWidth <= 900) {
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.body.classList.add('sidebar-collapsed');
+    });
+  });
+}
+// ── Progress bar ──
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = pct + '%';
+
+  document.getElementById('back-top').classList.toggle('visible', scrollTop > 400);
+});
+
+// ── Back to top ──
+document.getElementById('back-top').addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ── Sidebar accordion ──
+document.querySelectorAll('.nav-unit-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const unit = header.parentElement;
+    unit.classList.toggle('open');
+  });
+});
+
+// ── Active nav link on scroll ──
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = [];
+navLinks.forEach(link => {
+  const href = link.getAttribute('href');
+  if (href && href.startsWith('#')) {
+    const el = document.getElementById(href.slice(1));
+    if (el) sections.push({ link, el });
+  }
+});
+
+const observerOptions = { rootMargin: '-80px 0px -60% 0px', threshold: 0 };
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const activeLink = sections.find(s => s.el === entry.target);
+      if (activeLink) {
+        activeLink.link.classList.add('active');
+        // auto-open the parent unit
+        const parentUnit = activeLink.link.closest('.nav-unit');
+        if (parentUnit) parentUnit.classList.add('open');
+      }
+    }
+  });
+}, observerOptions);
+
+sections.forEach(({ el }) => observer.observe(el));
+
+// ── Search ──
+const searchInput = document.getElementById('search-input');
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase().trim();
+  
+  // Remove existing highlights
+  document.querySelectorAll('.highlight').forEach(el => {
+    el.outerHTML = el.textContent;
+  });
+
+  if (query.length < 2) {
+    navLinks.forEach(l => l.style.display = '');
+    document.querySelectorAll('.nav-unit').forEach(u => {
+      const wasOpen = u.dataset.manualOpen;
+      if (!wasOpen) u.classList.remove('open');
+    });
+    return;
+  }
+
+  // Filter nav links
+  navLinks.forEach(link => {
+    const text = link.textContent.toLowerCase();
+    const match = text.includes(query);
+    link.style.display = match ? '' : 'none';
+    if (match) {
+      link.closest('.nav-unit').classList.add('open');
+    }
+  });
+
+  // Highlight in content
+  const walker = document.createTreeWalker(
+    document.getElementById('content'),
+    NodeFilter.SHOW_TEXT,
+    { acceptNode: node => {
+      const parent = node.parentElement;
+      if (!parent) return NodeFilter.FILTER_REJECT;
+      const tag = parent.tagName.toLowerCase();
+      if (['script', 'style', 'pre', 'code'].includes(tag)) return NodeFilter.FILTER_REJECT;
+      if (parent.classList.contains('highlight')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }}
+  );
+
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+  textNodes.forEach(node => {
+    const text = node.textContent;
+    const lc = text.toLowerCase();
+    const idx = lc.indexOf(query);
+    if (idx !== -1) {
+      const before = text.slice(0, idx);
+      const match = text.slice(idx, idx + query.length);
+      const after = text.slice(idx + query.length);
+      const span = document.createElement('span');
+      span.innerHTML = before + `<mark class="highlight">${match}</mark>` + after;
+      node.parentNode.replaceChild(span, node);
+    }
+  });
+});
+
+// Smooth scroll with offset for fixed elements
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', e => {
+    e.preventDefault();
+    const id = anchor.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (target) {
+      const offset = 24;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  });
+});
+</script>
